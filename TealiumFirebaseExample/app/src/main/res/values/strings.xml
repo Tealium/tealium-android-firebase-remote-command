@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">TealiumFirebaseExample</string>
+
+    <!-- Hints -->
+    <string name="hint_user_id">User ID</string>
+    <string name="hint_user_property_name">User Property Name</string>
+    <string name="hint_user_property_value">User Property Value</string>
+
+    <string name="hint_games_character_name">Character Name</string>
+
+    <string name="hint_travel_origin">Travelling From</string>
+    <string name="hint_travel_destination">Traveling To</string>
+    <string name="hint_travel_date_from">Date From</string>
+    <string name="hint_travel_date_to">Date To</string>
+    <string name="hint_travel_class">Travel Class</string>
+    <string name="hint_travel_number_of_passengers">Number of Passengers</string>
+    <string name="hint_travel_number_of_rooms">Number of Rooms</string>
+
+    <!-- Button text -->
+    <string name="btn_launch_user_details">User Details</string>
+    <string name="btn_launch_ecommerce">E-Commerce</string>
+    <string name="btn_launch_gaming">Gaming</string>
+    <string name="btn_launch_travel">Travel</string>
+    <string name="btn_reset_data">Reset User Data</string>
+
+    <string name="btn_set_user_id">Set User Id</string>
+    <string name="btn_set_user_properties">Set User Properties</string>
+
+    <string name="btn_ecom_category_view">Category View</string>
+    <string name="btn_ecom_product_view">Product View</string>
+    <string name="btn_ecom_cart_add">Add to Cart</string>
+    <string name="btn_ecom_checkout">Checkout</string>
+    <string name="btn_ecom_purchase">Purchase</string>
+
+    <string name="btn_games_tutorial_begin">Tutorial Begin</string>
+    <string name="btn_games_tutorial_end">Tutorial End</string>
+    <string name="btn_games_level_start">Level Start</string>
+    <string name="btn_games_level_end">Level End</string>
+    <string name="btn_games_level_up">Level Up</string>
+    <string name="btn_games_unlock_achievement">Unlock Achievement</string>
+    <string name="btn_games_earn_virtual_currency">Earn Virtual Currency</string>
+    <string name="btn_games_spend_virtual_currency">Spend Virtual Currency</string>
+
+    <!-- Text View -->
+    <string name="txt_events_title">Events</string>
+</resources>
