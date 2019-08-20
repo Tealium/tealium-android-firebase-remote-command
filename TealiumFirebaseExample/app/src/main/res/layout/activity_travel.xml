@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/edit_text_travel_origin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/hint_travel_origin"/>
+
+    <EditText
+        android:id="@+id/edit_text_travel_destination"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/hint_travel_destination"/>
+
+    <EditText
+        android:id="@+id/edit_text_travel_date_from"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:hint="@string/hint_travel_date_from"/>
+
+    <EditText
+        android:id="@+id/edit_text_travel_date_to"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:hint="@string/hint_travel_date_to"/>
+
+    <EditText
+        android:id="@+id/edit_text_travel_class"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:hint="@string/hint_travel_class"/>
+
+    <EditText
+        android:id="@+id/edit_text_number_of_passengers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="@string/hint_travel_number_of_passengers"/>
+
+    <EditText
+        android:id="@+id/edit_text_number_of_rooms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:hint="@string/hint_travel_number_of_rooms"/>
+
+    <Button
+        android:id="@+id/btn_travel_purchase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_ecom_purchase"/>
+
+</LinearLayout>
