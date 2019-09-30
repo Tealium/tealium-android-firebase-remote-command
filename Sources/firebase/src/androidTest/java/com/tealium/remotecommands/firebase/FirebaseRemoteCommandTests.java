@@ -79,8 +79,8 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
-                Assert.assertNull("Unexpected timeout value", timeout);
-                Assert.assertNull("Unexpected minSeconds value", minSeconds);
+                Assert.assertTrue("Unexpected timeout value", timeout <= 0);
+                Assert.assertTrue("Unexpected minSeconds value", minSeconds <= 0);
                 Assert.assertTrue("Unexpected analyticsEnabled value", analyticsEnabled);
             }
         };
