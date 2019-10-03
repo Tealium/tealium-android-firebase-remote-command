@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.tealium.example.helper.TealiumHelper;
-import com.tealium.library.Tealium;
 import com.tealium.remotecommands.firebase.FirebaseConstants;
 
 import java.util.HashMap;

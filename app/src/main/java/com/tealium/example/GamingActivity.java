@@ -1,7 +1,6 @@
 package com.tealium.example;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,12 +9,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 import com.tealium.example.model.Player;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class GamingActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -57,7 +52,6 @@ public class GamingActivity extends AppCompatActivity implements View.OnClickLis
 
         TealiumHelper.trackScreen(this, "Gaming Page");
     }
-
 
     @Override
     public void onClick(View view) {
