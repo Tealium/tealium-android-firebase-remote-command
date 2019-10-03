@@ -110,11 +110,11 @@ class FirebaseWrapperImpl implements FirebaseWrapper {
 
     @Override
     public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
-        if (timeout != null) {
-            mFirebaseAnalytics.setSessionTimeoutDuration(timeout.longValue());
+        if (timeout > 0) {
+            mFirebaseAnalytics.setSessionTimeoutDuration(timeout);
         }
 
-        if (minSeconds != null) {
+        if (minSeconds > 0) {
             mFirebaseAnalytics.setMinimumSessionDuration(minSeconds.longValue());
         }
 
