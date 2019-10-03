@@ -6,9 +6,9 @@ public class Product {
     private String mProductName;
     private String mProductCategory;
     private Integer mProductQuantity;
-    private Long mProductUnitPrice;
+    private Double mProductUnitPrice;
 
-    public Product(String productId, String productName, String productCategory, Integer productQuantity, Long productUnitPrice) {
+    public Product(String productId, String productName, String productCategory, Integer productQuantity, Double productUnitPrice) {
         mProductId = productId;
         mProductName = productName;
         mProductCategory = productCategory;
@@ -48,11 +48,11 @@ public class Product {
         mProductQuantity = productQuantity;
     }
 
-    public Long getProductUnitPrice() {
+    public Double getProductUnitPrice() {
         return mProductUnitPrice;
     }
 
-    public void setProductUnitPrice(Long productUnitPrice) {
+    public void setProductUnitPrice(Double productUnitPrice) {
         mProductUnitPrice = productUnitPrice;
     }
 }

@@ -13,7 +13,6 @@ import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.Commands;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.Keys;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
@@ -24,6 +23,8 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
     public static final String DEFAULT_COMMAND_DESCRIPTION = "Tealium Firebase Analytics integration";
+    static final int sErrorTime = -1;
+    static final boolean sDefaultAnalyticsEnabled = true;
 
     /**
      * Default constructor uses {@value DEFAULT_COMMAND_ID} and {@value DEFAULT_COMMAND_DESCRIPTION}
@@ -74,28 +75,10 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                 switch (command) {
 
                     case Commands.CONFIGURE:
-                        Integer timeout = null;
-                        Integer minSeconds = null;
-                        Boolean analyticsEnabled = null;
-                        try {
-                            timeout = payload.getInt(Keys.SESSION_TIMEOUT) * 1000;
-                        } catch (JSONException jex) {
-                            // leave as null
-                        }
-
-                        try {
-                            minSeconds = payload.getInt(Keys.MIN_SECONDS) * 1000;
-                        } catch (JSONException jex) {
-                            // leave as null
-                        }
-
-                        try {
-                            analyticsEnabled = payload.getBoolean(Keys.ANALYTICS_ENABLED);
-                        } catch (JSONException jex) {
-                            // leave as null
-                        }
-
-                        mFirebaseWrapper.configure(timeout, minSeconds, analyticsEnabled);
+                        mFirebaseWrapper.configure(
+                                payload.optInt(Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
+                                payload.optInt(Keys.MIN_SECONDS, sErrorTime) * 1000,
+                                payload.optBoolean(Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
                         break;
                     case Commands.LOG_EVENT:
                         String eventName = payload.optString(Keys.EVENT_NAME, null);
