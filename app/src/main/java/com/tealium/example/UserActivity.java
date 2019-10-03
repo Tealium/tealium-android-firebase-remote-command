@@ -10,19 +10,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
-import com.tealium.remotecommands.firebase.FirebaseConstants;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static final String TAG = UserActivity.class.getSimpleName();
-
-    private Button mSetUserIdButton;
-    private EditText mUserIdEditText;
-    private EditText mUserPropertyValueEditText;
-
+    Button mSetUserIdButton;
+    EditText mUserIdEditText;
+    EditText mUserPropertyValueEditText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,8 +33,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
         TealiumHelper.trackScreen(this, "User Details");
     }
-
-
+    
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_set_user_id) {

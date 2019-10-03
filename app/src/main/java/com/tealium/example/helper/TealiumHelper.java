@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.webkit.WebView;
 
@@ -16,12 +15,6 @@ import com.tealium.library.DispatchValidator;
 import com.tealium.library.Tealium;
 import com.tealium.remotecommands.firebase.FirebaseRemoteCommand;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
