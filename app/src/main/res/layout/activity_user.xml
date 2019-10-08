@@ -24,33 +24,4 @@
         android:padding="8dp"
         android:text="@string/btn_set_user_id"/>
 
-    <!--<view-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="2dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:background="@color/colorPrimaryDark" />-->
-
-
-    <!--<EditText-->
-        <!--android:id="@+id/edit_text_user_property_name"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="8dp"-->
-        <!--android:hint="@string/hint_user_property_name" />-->
-
-    <!--<EditText-->
-        <!--android:id="@+id/edit_text_user_property_value"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="8dp"-->
-        <!--android:hint="@string/hint_user_property_value" />-->
-
-    <!--<Button-->
-        <!--android:id="@+id/btn_set_user_properties"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="8dp"-->
-        <!--android:text="@string/btn_set_user_properties"/>-->
-
 </LinearLayout>
