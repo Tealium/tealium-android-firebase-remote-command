@@ -2,7 +2,6 @@ package com.tealium.remotecommands.firebase;
 
 import android.util.Log;
 
-import com.google.android.gms.common.util.ArrayUtils;
 import com.tealium.internal.tagbridge.RemoteCommand;
 
 import static com.tealium.remotecommands.firebase.FirebaseConstants.SEPARATOR;

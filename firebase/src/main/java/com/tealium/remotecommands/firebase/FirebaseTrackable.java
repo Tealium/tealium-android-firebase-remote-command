@@ -6,7 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONObject;
 
-interface FirebaseWrapper {
+interface FirebaseTrackable {
 
     /**
      * Configures the Timeout, and Minimum Session Duration as well as whether to enable Analytics.

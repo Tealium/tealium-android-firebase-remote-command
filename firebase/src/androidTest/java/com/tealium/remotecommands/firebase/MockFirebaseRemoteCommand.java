@@ -1,9 +1,6 @@
 package com.tealium.remotecommands.firebase;
 
 import android.app.Application;
-import android.os.Bundle;
-
-import org.json.JSONObject;
 
 public class MockFirebaseRemoteCommand extends FirebaseRemoteCommand {
 
@@ -15,7 +12,7 @@ public class MockFirebaseRemoteCommand extends FirebaseRemoteCommand {
         super(application, commandId, description);
     }
 
-    public void setWrapper(FirebaseWrapper wrapper) {
-        mFirebaseWrapper = wrapper;
+    public void setTrackable(FirebaseTrackable trackable) {
+        mFirebaseTrackable = trackable;
     }
 }

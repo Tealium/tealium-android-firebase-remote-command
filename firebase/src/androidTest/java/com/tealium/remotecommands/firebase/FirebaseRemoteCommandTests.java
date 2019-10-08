@@ -2,7 +2,6 @@ package com.tealium.remotecommands.firebase;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
@@ -32,8 +31,8 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         return new MockFirebaseRemoteCommand(QAActivity.getActivity().getApplication());
     }
 
-    public MockFirebaseWrapperImpl newMockFirebaseWrapper() {
-        return new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext());
+    public MockFirebaseTracker newMockFirebaseWrapper() {
+        return new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext());
     }
 
     @Rule
@@ -50,7 +49,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplication()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplication()) {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
@@ -59,7 +58,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 Assert.assertSame("Unexpected analyticsEnabled value", analyticsEnabled, TestData.Values.ANALYTICS_ENABLED_FALSE);
             }
         };
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidConfig());
@@ -75,7 +74,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplication()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplication()) {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
@@ -84,7 +83,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 Assert.assertTrue("Unexpected analyticsEnabled value", analyticsEnabled);
             }
         };
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidConfig());
@@ -100,7 +99,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -110,7 +109,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidEvent());
@@ -126,7 +125,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -136,7 +135,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidEvent());
@@ -152,7 +151,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -174,7 +173,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidEcommerceEvent());
@@ -190,7 +189,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -212,7 +211,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidEcommerceEvent());
@@ -228,7 +227,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -238,7 +237,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidScreenName());
@@ -254,7 +253,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -264,7 +263,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidScreenName());
@@ -280,7 +279,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -290,7 +289,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidUserProperty());
@@ -306,7 +305,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -316,7 +315,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidUserProperty());
@@ -332,7 +331,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -341,7 +340,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidUserId());
@@ -357,7 +356,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = new MockFirebaseWrapperImpl(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -366,7 +365,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidUserId());
@@ -382,9 +381,9 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.RESET_DATA);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = newMockFirebaseWrapper();
+        MockFirebaseTracker mockWrapper = newMockFirebaseWrapper();
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getResetData());
@@ -405,9 +404,9 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.RESET_DATA);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseWrapperImpl mockWrapper = newMockFirebaseWrapper();
+        MockFirebaseTracker mockWrapper = newMockFirebaseWrapper();
 
-        mockRemoteCommand.setWrapper(mockWrapper);
+        mockRemoteCommand.setTrackable(mockWrapper);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getCompositeData());

@@ -5,15 +5,12 @@ import android.content.Context;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class MockFirebaseWrapperImpl extends FirebaseWrapperImpl {
+public class MockFirebaseTracker extends FirebaseTracker {
 
-    public MockFirebaseWrapperImpl(Context applicationContext) {
+    public MockFirebaseTracker(Context applicationContext) {
         super(applicationContext);
     }
 

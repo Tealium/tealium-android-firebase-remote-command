@@ -18,7 +18,7 @@ import org.json.JSONObject;
 public class FirebaseRemoteCommand extends RemoteCommand {
 
 
-    FirebaseWrapper mFirebaseWrapper;
+    FirebaseTrackable mFirebaseTrackable;
     private static Activity mCurrentActivity;
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
@@ -53,7 +53,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         Application.ActivityLifecycleCallbacks cb = createActivityLifecycleCallbacks();
         application.registerActivityLifecycleCallbacks(cb);
 
-        mFirebaseWrapper = new FirebaseWrapperImpl(application.getApplicationContext());
+        mFirebaseTrackable = new FirebaseTracker(application.getApplicationContext());
     }
 
     /**
@@ -62,20 +62,24 @@ public class FirebaseRemoteCommand extends RemoteCommand {
     @Override
     protected void onInvoke(RemoteCommand.Response response) {
         JSONObject payload = response.getRequestPayload();
+        String[] commandArray = splitCommands(payload);
+        parseCommands(commandArray, payload);
 
-        String command = payload.optString(Keys.COMMAND_NAME, null);
+        response.send();
+    }
 
-        String[] commandArray;
-        commandArray = command.split(FirebaseConstants.SEPARATOR);
+    private String[] splitCommands(JSONObject payload) {
+        String commandString = payload.optString(Keys.COMMAND_NAME, "");
+        return commandString.split(FirebaseConstants.SEPARATOR);
+    }
 
-        for (int j = 0, commandlen = commandArray.length; j < commandlen; j++) {
-            command = commandArray[j];
+    private void parseCommands(String[] commandList, JSONObject payload) {
+        for (String command : commandList) {
             command = command.trim();
             try {
                 switch (command) {
-
                     case Commands.CONFIGURE:
-                        mFirebaseWrapper.configure(
+                        mFirebaseTrackable.configure(
                                 payload.optInt(Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
                                 payload.optInt(Keys.MIN_SECONDS, sErrorTime) * 1000,
                                 payload.optBoolean(Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
@@ -83,37 +87,30 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case Commands.LOG_EVENT:
                         String eventName = payload.optString(Keys.EVENT_NAME, null);
                         JSONObject params = payload.optJSONObject(Keys.EVENT_PARAMS);
-
-                        mFirebaseWrapper.logEvent(eventName, params);
+                        mFirebaseTrackable.logEvent(eventName, params);
                         break;
                     case Commands.SET_SCREEN_NAME:
                         String screenName = payload.optString(Keys.SCREEN_NAME, null);
                         String screenClass = payload.optString(Keys.SCREEN_CLASS, null);
-
-                        mFirebaseWrapper.setScreenName(mCurrentActivity, screenName, screenClass);
+                        mFirebaseTrackable.setScreenName(mCurrentActivity, screenName, screenClass);
                         break;
                     case Commands.SET_USER_PROPERTY:
                         String propertyName = payload.optString(Keys.USER_PROPERTY_NAME, null);
                         String propertyValue = payload.optString(Keys.USER_PROPERTY_VALUE, null);
-
-                        mFirebaseWrapper.setUserProperty(propertyName, propertyValue);
+                        mFirebaseTrackable.setUserProperty(propertyName, propertyValue);
                         break;
                     case Commands.SET_USER_ID:
                         String userId = payload.optString(Keys.USER_ID, null);
-
-                        mFirebaseWrapper.setUserId(userId);
+                        mFirebaseTrackable.setUserId(userId);
                         break;
                     case Commands.RESET_DATA:
-
-                        mFirebaseWrapper.resetData();
+                        mFirebaseTrackable.resetData();
                         break;
                 }
             } catch (Exception ex) {
                 Log.w(TAG, "Error processing command: " + command, ex);
             }
-
         }
-        response.send();
     }
 
 
