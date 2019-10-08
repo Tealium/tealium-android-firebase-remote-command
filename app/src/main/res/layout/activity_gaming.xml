@@ -21,18 +21,6 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_games_tutorial_end"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/btn_games_level_start"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/btn_games_level_start"/>-->
-
-    <!--<Button-->
-        <!--android:id="@+id/btn_games_level_end"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/btn_games_level_end"/>-->
-
     <Button
         android:id="@+id/btn_games_level_up"
         android:layout_width="match_parent"
