@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
 
-class FirebaseWrapperImpl implements FirebaseWrapper {
+class FirebaseTracker implements FirebaseTrackable {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -104,7 +104,7 @@ class FirebaseWrapperImpl implements FirebaseWrapper {
         params.put("param_virtual_currency_name", FirebaseAnalytics.Param.VIRTUAL_CURRENCY_NAME);
     }
 
-    public FirebaseWrapperImpl(Context applicationContext) {
+    public FirebaseTracker(Context applicationContext) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
     }
 
