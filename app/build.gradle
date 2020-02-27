@@ -22,7 +22,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'com.tealium:library:5.5.5'
-    implementation 'com.tealium.remotecommands:firebase:1.0.1'
+    debugImplementation project(path:':firebase')
+    releaseImplementation 'com.tealium.remotecommands:firebase:1.0.1'
 
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-iid:17.0.4'
