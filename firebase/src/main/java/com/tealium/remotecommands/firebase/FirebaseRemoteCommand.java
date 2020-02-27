@@ -126,12 +126,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
             @Override
             public void onActivityStarted(Activity activity) {
-
+		mCurrentActivity = activity;
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-
+		mCurrentActivity = activity;
             }
 
             @Override

@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 28
@@ -7,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -15,7 +16,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -34,6 +35,27 @@ android {
         }
     }
 
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.tealium.remotecommands'
+            artifactId 'firebase'
+            version '1.0.1'
+            artifact("$buildDir/outputs/aar/firebase-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            url "s3://maven.tealiumiq.com/android/releases/"
+            credentials(AwsCredentials) {
+                // Dummy credentials provided in project's gradle.properties; these will be overridden by your global settings in ~/.gradle/gradle.properties
+                accessKey AWS_ACCESS_KEY
+                secretKey AWS_SECRET_KEY
+            }
+        }
+    }
 }
 
 dependencies {
