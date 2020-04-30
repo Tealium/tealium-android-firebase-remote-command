@@ -33,4 +33,9 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_ecom_purchase"/>
 
+    <Button
+        android:id="@+id/btn_ecom_purchase_basket"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_ecom_purchase_basket"/>
 </LinearLayout>
