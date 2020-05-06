@@ -3,10 +3,12 @@ package com.tealium.remotecommands.firebase;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,7 @@ class FirebaseTracker implements FirebaseTrackable {
     static {
         eventsMap = new HashMap<>();
         eventsMap.put("event_add_payment_info", FirebaseAnalytics.Event.ADD_PAYMENT_INFO);
+        eventsMap.put("event_add_shipping_info", FirebaseAnalytics.Event.ADD_SHIPPING_INFO);
         eventsMap.put("event_add_to_cart", FirebaseAnalytics.Event.ADD_TO_CART);
         eventsMap.put("event_add_to_wishlist", FirebaseAnalytics.Event.ADD_TO_WISHLIST);
         eventsMap.put("event_app_open", FirebaseAnalytics.Event.APP_OPEN);
@@ -36,14 +39,20 @@ class FirebaseTracker implements FirebaseTrackable {
         eventsMap.put("event_ecommerce_purchase", FirebaseAnalytics.Event.ECOMMERCE_PURCHASE);
         eventsMap.put("event_generate_lead", FirebaseAnalytics.Event.GENERATE_LEAD);
         eventsMap.put("event_join_group", FirebaseAnalytics.Event.JOIN_GROUP);
+        eventsMap.put("event_level_end", FirebaseAnalytics.Event.LEVEL_END);
+        eventsMap.put("event_level_start", FirebaseAnalytics.Event.LEVEL_START);
         eventsMap.put("event_level_up", FirebaseAnalytics.Event.LEVEL_UP);
         eventsMap.put("event_login", FirebaseAnalytics.Event.LOGIN);
         eventsMap.put("event_post_score", FirebaseAnalytics.Event.POST_SCORE);
         eventsMap.put("event_present_offer", FirebaseAnalytics.Event.PRESENT_OFFER);
+        eventsMap.put("event_purchase", FirebaseAnalytics.Event.PURCHASE);
         eventsMap.put("event_purchase_refund", FirebaseAnalytics.Event.PURCHASE_REFUND);
+        eventsMap.put("event_refund", FirebaseAnalytics.Event.REFUND);
         eventsMap.put("event_remove_cart", FirebaseAnalytics.Event.REMOVE_FROM_CART);
         eventsMap.put("event_search", FirebaseAnalytics.Event.SEARCH);
         eventsMap.put("event_select_content", FirebaseAnalytics.Event.SELECT_CONTENT);
+        eventsMap.put("event_select_item", FirebaseAnalytics.Event.SELECT_ITEM);
+        eventsMap.put("event_select_promotion", FirebaseAnalytics.Event.SELECT_PROMOTION);
         eventsMap.put("event_set_checkout_option", FirebaseAnalytics.Event.SET_CHECKOUT_OPTION);
         eventsMap.put("event_share", FirebaseAnalytics.Event.SHARE);
         eventsMap.put("event_signup", FirebaseAnalytics.Event.SIGN_UP);
@@ -51,8 +60,10 @@ class FirebaseTracker implements FirebaseTrackable {
         eventsMap.put("event_tutorial_begin", FirebaseAnalytics.Event.TUTORIAL_BEGIN);
         eventsMap.put("event_tutorial_complete", FirebaseAnalytics.Event.TUTORIAL_COMPLETE);
         eventsMap.put("event_unlock_achievement", FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT);
+        eventsMap.put("event_view_cart", FirebaseAnalytics.Event.VIEW_CART);
         eventsMap.put("event_view_item", FirebaseAnalytics.Event.VIEW_ITEM);
-        eventsMap.put("event_view_item_list", FirebaseAnalytics.Event.VIEW_ITEM);
+        eventsMap.put("event_view_item_list", FirebaseAnalytics.Event.VIEW_ITEM_LIST);
+        eventsMap.put("event_view_promotion", FirebaseAnalytics.Event.VIEW_PROMOTION);
         eventsMap.put("event_view_search_results", FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS);
 
         params = new HashMap<>();
@@ -71,31 +82,44 @@ class FirebaseTracker implements FirebaseTrackable {
         params.put("param_creative_slot", FirebaseAnalytics.Param.CREATIVE_SLOT);
         params.put("param_currency", FirebaseAnalytics.Param.CURRENCY);
         params.put("param_destination", FirebaseAnalytics.Param.DESTINATION);
+        params.put("param_discount", FirebaseAnalytics.Param.DISCOUNT);
         params.put("param_end_date", FirebaseAnalytics.Param.END_DATE);
+        params.put("param_extend_session", FirebaseAnalytics.Param.EXTEND_SESSION);
         params.put("param_flight_number", FirebaseAnalytics.Param.FLIGHT_NUMBER);
         params.put("param_group_id", FirebaseAnalytics.Param.GROUP_ID);
         params.put("param_index", FirebaseAnalytics.Param.INDEX);
+        params.put("param_items", FirebaseAnalytics.Param.ITEMS);
         params.put("param_item_brand", FirebaseAnalytics.Param.ITEM_BRAND);
         params.put("param_item_category", FirebaseAnalytics.Param.ITEM_CATEGORY);
         params.put("param_item_id", FirebaseAnalytics.Param.ITEM_ID);
         params.put("param_item_list", FirebaseAnalytics.Param.ITEM_LIST);
+        params.put("param_item_list_id", FirebaseAnalytics.Param.ITEM_LIST_ID);
+        params.put("param_item_list_name", FirebaseAnalytics.Param.ITEM_LIST_NAME);
         params.put("param_item_location_id", FirebaseAnalytics.Param.ITEM_LOCATION_ID);
         params.put("param_item_name", FirebaseAnalytics.Param.ITEM_NAME);
         params.put("param_item_variant", FirebaseAnalytics.Param.ITEM_VARIANT);
         params.put("param_level", FirebaseAnalytics.Param.LEVEL);
+        params.put("param_level_name", FirebaseAnalytics.Param.LEVEL_NAME);
         params.put("param_location", FirebaseAnalytics.Param.LOCATION);
+        params.put("param_location_id", FirebaseAnalytics.Param.LOCATION_ID);
         params.put("param_medium", FirebaseAnalytics.Param.MEDIUM);
+        params.put("param_method", FirebaseAnalytics.Param.METHOD);
         params.put("param_number_nights", FirebaseAnalytics.Param.NUMBER_OF_NIGHTS);
         params.put("param_number_pax", FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS);
         params.put("param_number_rooms", FirebaseAnalytics.Param.NUMBER_OF_ROOMS);
         params.put("param_origin", FirebaseAnalytics.Param.ORIGIN);
+        params.put("param_payment_type", FirebaseAnalytics.Param.PAYMENT_TYPE);
         params.put("param_price", FirebaseAnalytics.Param.PRICE);
+        params.put("param_promotion_id", FirebaseAnalytics.Param.PROMOTION_ID);
+        params.put("param_promotion_name", FirebaseAnalytics.Param.PROMOTION_NAME);
         params.put("param_quantity", FirebaseAnalytics.Param.QUANTITY);
         params.put("param_score", FirebaseAnalytics.Param.SCORE);
         params.put("param_search_term", FirebaseAnalytics.Param.SEARCH_TERM);
         params.put("param_shipping", FirebaseAnalytics.Param.SHIPPING);
+        params.put("param_shipping_tier", FirebaseAnalytics.Param.SHIPPING_TIER);
         params.put("param_source", FirebaseAnalytics.Param.SOURCE);
         params.put("param_start_date", FirebaseAnalytics.Param.START_DATE);
+        params.put("param_success", FirebaseAnalytics.Param.SUCCESS);
         params.put("param_tax", FirebaseAnalytics.Param.TAX);
         params.put("param_term", FirebaseAnalytics.Param.TERM);
         params.put("param_transaction_id", FirebaseAnalytics.Param.TRANSACTION_ID);
@@ -128,9 +152,7 @@ class FirebaseTracker implements FirebaseTrackable {
         Bundle paramBundle;
         try {
             paramBundle = jsonToBundle(eventParams);
-        } catch (JSONException e) {
-            paramBundle = null;
-        } catch (NullPointerException e) {
+        } catch (JSONException | NullPointerException e) {
             paramBundle = null;
         }
         if (eventName != null) {
@@ -175,20 +197,30 @@ class FirebaseTracker implements FirebaseTrackable {
             try {
                 switch (firebaseKey) {
                     // Double
-                    case FirebaseAnalytics.Param.VALUE:
+                    case FirebaseAnalytics.Param.DISCOUNT:
                     case FirebaseAnalytics.Param.PRICE:
-                    case FirebaseAnalytics.Param.TAX:
                     case FirebaseAnalytics.Param.SHIPPING:
+                    case FirebaseAnalytics.Param.TAX:
+                    case FirebaseAnalytics.Param.VALUE:
                         bundle.putDouble(firebaseKey, jsonObject.getDouble(key));
                         break;
                     // Long
-                    case FirebaseAnalytics.Param.QUANTITY:
-                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
                     case FirebaseAnalytics.Param.LEVEL:
+                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
+                    case FirebaseAnalytics.Param.QUANTITY:
                     case FirebaseAnalytics.Param.SCORE:
+                    case FirebaseAnalytics.Param.SUCCESS:
                         bundle.putLong(firebaseKey, jsonObject.getLong(key));
+                        break;
+                    case FirebaseAnalytics.Param.ITEMS:
+                        JSONArray items = jsonObject.getJSONArray(key);
+                        Parcelable[] itemList = new Parcelable[items.length()];
+                        for (int i = 0; i < items.length(); i++) {
+                            itemList[i] = jsonToBundle(items.getJSONObject(i));
+                        }
+                        bundle.putParcelableArray(firebaseKey, itemList);
                         break;
                     // All others are Strings.
                     default:

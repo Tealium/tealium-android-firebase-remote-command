@@ -2,6 +2,7 @@ package com.tealium.remotecommands.firebase;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
@@ -164,9 +165,15 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                     Assert.assertEquals("Value does not match.", 40.00D, paramBundle.getDouble(FirebaseAnalytics.Param.VALUE), 0D);
                     Assert.assertEquals("Tax does not match.", 10.00D, paramBundle.getDouble(FirebaseAnalytics.Param.TAX), 0D);
                     Assert.assertEquals("Shipping does not match.", 8.00D, paramBundle.getDouble(FirebaseAnalytics.Param.SHIPPING), 0D);
-                    Assert.assertEquals("Item Id does not match.", "SKU123", paramBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
-                    Assert.assertEquals("Item Name does not match.", "Item 123", paramBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
                     Assert.assertEquals("Currency does not match.", "GBP", paramBundle.getString(FirebaseAnalytics.Param.CURRENCY));
+
+                    Parcelable[] itemsBundle = paramBundle.getParcelableArray("items");
+                    Assert.assertEquals("Item count does not match.", 2, itemsBundle.length);
+                    for (Parcelable item : itemsBundle) {
+                        Bundle itemBundle = (Bundle) item;
+                        Assert.assertEquals("Item Id does not match.", "SKU123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
+                        Assert.assertEquals("Item Name does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
+                    }
                 } catch (JSONException jex) {
                     Assert.fail();
                 }
@@ -202,8 +209,6 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                     Assert.assertEquals("Value does not match.", "String-Value", paramBundle.getString(FirebaseAnalytics.Param.VALUE));
                     Assert.assertEquals("Tax does not match.", "String-Tax", paramBundle.getString(FirebaseAnalytics.Param.TAX));
                     Assert.assertEquals("Shipping does not match.", "String-Shipping", paramBundle.getString(FirebaseAnalytics.Param.SHIPPING));
-                    Assert.assertEquals("Item Id does not match.", "123", paramBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
-                    Assert.assertEquals("Item Name does not match.", "123", paramBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
                     Assert.assertNull("Currency should be null.", paramBundle.getString(FirebaseAnalytics.Param.CURRENCY));
                 } catch (JSONException jex) {
                     Assert.fail();
