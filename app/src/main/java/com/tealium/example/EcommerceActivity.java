@@ -44,6 +44,8 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
         mPurchaseButton.setOnClickListener(this);
         mPurchaseBasketButton.setOnClickListener(this);
 
+        updateBasket();
+
         TealiumHelper.trackScreen(this, "Shop");
     }
 
@@ -70,9 +72,13 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
                 data.put(DataLayer.PRODUCT_CATEGORY, product.getProductCategory());
                 data.put(DataLayer.PRODUCT_QUANTITY, 1);
                 data.put(DataLayer.PRODUCT_PRICE, product.getProductUnitPrice());
+
+                data.put(DataLayer.ORDER_CURRENCY, "USD");
+                data.put(DataLayer.ORDER_TOTAL, product.getProductUnitPrice());
                 TealiumHelper.trackEvent("cart_add", data);
 
                 Basket.getInstance().addProduct(product);
+                updateBasket();
                 break;
             case R.id.btn_ecom_checkout:
                 TealiumHelper.trackEvent("checkout", data);
@@ -99,8 +105,16 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
                 data.put(DataLayer.ORDER_CURRENCY, "USD");
                 data.put(DataLayer.ORDER_TOTAL, Basket.getInstance().getBasketTotalPrice());
                 data.put(DataLayer.ORDER_ID, "ORD-12345");
-                TealiumHelper.trackEvent("order", data);
+
+                Basket.getInstance().clear();
+                updateBasket();
+
+                TealiumHelper.trackEvent("order_basket", data);
                 break;
         }
+    }
+
+    private void updateBasket() {
+        mPurchaseBasketButton.setText(getString(R.string.btn_ecom_purchase_basket, Basket.getInstance().getItemCount()));
     }
 }

@@ -3,6 +3,7 @@ package com.tealium.remotecommands.firebase;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -11,10 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
@@ -120,6 +119,7 @@ class FirebaseTracker implements FirebaseTrackable {
         params.put("param_shipping_tier", FirebaseAnalytics.Param.SHIPPING_TIER);
         params.put("param_source", FirebaseAnalytics.Param.SOURCE);
         params.put("param_start_date", FirebaseAnalytics.Param.START_DATE);
+        params.put("param_success", FirebaseAnalytics.Param.SUCCESS);
         params.put("param_tax", FirebaseAnalytics.Param.TAX);
         params.put("param_term", FirebaseAnalytics.Param.TERM);
         params.put("param_transaction_id", FirebaseAnalytics.Param.TRANSACTION_ID);
@@ -197,30 +197,32 @@ class FirebaseTracker implements FirebaseTrackable {
             try {
                 switch (firebaseKey) {
                     // Double
-                    case FirebaseAnalytics.Param.VALUE:
+                    case FirebaseAnalytics.Param.DISCOUNT:
                     case FirebaseAnalytics.Param.PRICE:
-                    case FirebaseAnalytics.Param.TAX:
                     case FirebaseAnalytics.Param.SHIPPING:
+                    case FirebaseAnalytics.Param.TAX:
+                    case FirebaseAnalytics.Param.VALUE:
                         bundle.putDouble(firebaseKey, jsonObject.getDouble(key));
                         break;
                     // Long
-                    case FirebaseAnalytics.Param.QUANTITY:
-                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
                     case FirebaseAnalytics.Param.LEVEL:
+                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
+                    case FirebaseAnalytics.Param.QUANTITY:
                     case FirebaseAnalytics.Param.SCORE:
+                    case FirebaseAnalytics.Param.SUCCESS:
                         bundle.putLong(firebaseKey, jsonObject.getLong(key));
                         break;
-                    // All others are Strings.
                     case FirebaseAnalytics.Param.ITEMS:
                         JSONArray items = jsonObject.getJSONArray(key);
-                        Bundle[] itemList = new Bundle[items.length()];
-                        for (int i=0; i < items.length(); i++) {
+                        Parcelable[] itemList = new Parcelable[items.length()];
+                        for (int i = 0; i < items.length(); i++) {
                             itemList[i] = jsonToBundle(items.getJSONObject(i));
                         }
                         bundle.putParcelableArray(firebaseKey, itemList);
                         break;
+                    // All others are Strings.
                     default:
                         bundle.putString(firebaseKey, jsonObject.getString(key));
                 }

@@ -1,7 +1,5 @@
 package com.tealium.example.model;
 
-import android.util.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +11,7 @@ public class Basket {
     private static Basket INSTANCE;
     private Map<Product, BasketProduct> products = new HashMap<>();
 
-    private Basket(){
+    private Basket() {
     }
 
     public static Basket getInstance() {
@@ -114,16 +112,19 @@ public class Basket {
         return total;
     }
 
-    // not needed?
-    // public int getItemCount() {
-    //     throw new UnsupportedOperationException();
-    // }
+    public int getItemCount() {
+        int total = 0;
+        for (BasketProduct p : products.values()) {
+            total += p.quantity;
+        }
+        return total;
+    }
 
     public void clear() {
         products.clear();
     }
 
-    private class BasketProduct {
+    private static class BasketProduct {
 
         private Product product;
         private int quantity;

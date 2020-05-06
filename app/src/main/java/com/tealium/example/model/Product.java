@@ -86,7 +86,7 @@ public class Product {
         if (!(obj instanceof Product)) {
             return false;
         }
-        Product p = (Product)obj;
+        Product p = (Product) obj;
         return mProductId.equals(p.getProductId())
                 && mProductName.equals(p.getProductName())
                 && mProductCategory.equals(p.getProductCategory())

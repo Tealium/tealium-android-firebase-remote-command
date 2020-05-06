@@ -9,6 +9,7 @@ import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.Commands;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.Keys;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -239,6 +240,8 @@ public class TestData {
         public static final JSONObject EVENT_PARAMS = new JSONObject();
         public static final JSONObject ECOMMERCE_PARAMS = new JSONObject();
         public static final JSONObject INVALID_ECOMMERCE_PARAMS = new JSONObject();
+        public static final JSONArray ITEMS_ARRAY = new JSONArray();
+        public static final JSONObject ITEMS_PARAMS = new JSONObject();
 
         public static final String SCREEN_NAME = "TestScreenName";
         public static final String SCREEN_CLASS = "TestScreenClass";
@@ -253,20 +256,27 @@ public class TestData {
                 EVENT_PARAMS.put("param_1", "value_1");
                 EVENT_PARAMS.put("param_2", "value_2");
 
-                ECOMMERCE_PARAMS.put("param_item_id", "SKU123");
-                ECOMMERCE_PARAMS.put("param_item_name", "Item 123");
+                ITEMS_PARAMS.put("param_item_id", "SKU123");
+                ITEMS_PARAMS.put("param_item_name", "Item 123");
+                ITEMS_PARAMS.put("param_item_category", "Category 123");
+                ITEMS_PARAMS.put("param_item_variant", "Variant 123");
+                ITEMS_PARAMS.put("param_item_brand", "Brand 123");
+                ITEMS_PARAMS.put("param_price", 28.00);
+
+                ITEMS_ARRAY.put(ITEMS_PARAMS);
+                ITEMS_ARRAY.put(ITEMS_PARAMS);
+
+                ECOMMERCE_PARAMS.put("param_items", ITEMS_ARRAY);
                 ECOMMERCE_PARAMS.put("param_value", 40.00);
                 ECOMMERCE_PARAMS.put("param_tax", 10.00);
                 ECOMMERCE_PARAMS.put("param_shipping", 8.00);
                 ECOMMERCE_PARAMS.put("param_currency", "GBP");
 
-                INVALID_ECOMMERCE_PARAMS.put("param_item_id", 123);
-                INVALID_ECOMMERCE_PARAMS.put("param_item_name", 123);
                 INVALID_ECOMMERCE_PARAMS.put("param_value", "String-Value");
                 INVALID_ECOMMERCE_PARAMS.put("param_tax", "String-Tax");
                 INVALID_ECOMMERCE_PARAMS.put("param_shipping", "String-Shipping");
                 INVALID_ECOMMERCE_PARAMS.put("param_currency", null);
-            } catch (JSONException jex) {
+            } catch (JSONException ignored) {
 
             }
         }
