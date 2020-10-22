@@ -2,7 +2,7 @@
 
 buildscript {
     ext.kotlin_version = '1.4.10'
-    ext.tealium_appsflyer_version = '1.2.0'
+    ext.tealium_firebase_version = '1.2.0'
 
     repositories {
         google()

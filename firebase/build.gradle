@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName tealium_appsflyer_version
+        versionName tealium_firebase_version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -42,19 +42,19 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'com.tealium.remotecommands'
             artifactId 'firebase'
-            version tealium_appsflyer_version
+            version tealium_firebase_version
             artifact("$buildDir/outputs/aar/firebase-release.aar")
         }
     }
-    repositories {
-        maven {
-            url "s3://maven.tealiumiq.com/android/releases/"
-            credentials(AwsCredentials) {
-                accessKey AWS_ACCESS_KEY
-                secretKey AWS_SECRET_KEY
-            }
-        }
-    }
+//    repositories {
+//        maven {
+//            url "s3://maven.tealiumiq.com/android/releases/"
+//            credentials(AwsCredentials) {
+//                accessKey AWS_ACCESS_KEY
+//                secretKey AWS_SECRET_KEY
+//            }
+//        }
+//    }
 }
 
 dependencies {

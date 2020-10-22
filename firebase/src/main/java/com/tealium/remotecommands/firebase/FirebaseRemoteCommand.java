@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
-
     FirebaseCommand mFirebaseCommand;
     private static Activity mCurrentActivity;
 
@@ -71,7 +70,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
     private void parseCommands(String[] commandList, JSONObject payload) {
         for (String command : commandList) {
-            command = command.trim();
+            command = command.trim().toLowerCase();
             try {
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
@@ -83,6 +82,9 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.LOG_EVENT:
                         String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
                         JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        if (params == null) {
+                            params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
+                        }
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
                     case FirebaseConstants.Commands.SET_SCREEN_NAME:

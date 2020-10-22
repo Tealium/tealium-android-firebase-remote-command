@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,19 @@ public class TestData {
             return create(json);
         }
 
+        public static RemoteCommand.Response getValidTagEvent() throws JSONException {
+            JSONObject payload = new JSONObject();
+            try {
+                payload.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+                payload.put(Keys.EVENT_NAME, Values.EVENT_NAME);
+                payload.put(Keys.TAG_EVENT_PARAMS, Values.EVENT_PARAMS);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getValidTagEvent: ", jex);
+            }
+
+            return create(payload);
+        }
+
         public static RemoteCommand.Response getInvalidEvent() {
             JSONObject json = new JSONObject();
             try {
@@ -90,6 +104,19 @@ public class TestData {
                 Log.w(TEST_TAG + "-Test", "getInvalidEvent: ", jex);
             }
             return create(json);
+        }
+
+        public static RemoteCommand.Response getInvalidTagEvent() throws JSONException {
+            JSONObject payload = new JSONObject();
+            try {
+                payload.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+                payload.put(Keys.EVENT_NAME, null);
+                payload.put(Keys.TAG_EVENT_PARAMS, null);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getInvalidTagEvent: ", jex);
+            }
+
+            return create(payload);
         }
 
         public static RemoteCommand.Response getValidEcommerceEvent() {
