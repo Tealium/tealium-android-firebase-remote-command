@@ -2,7 +2,7 @@ package com.tealium.remotecommands.firebase;
 
 import android.util.Log;
 
-import com.tealium.internal.tagbridge.RemoteCommand;
+import com.tealium.remotecommands.RemoteCommand;
 
 import static com.tealium.remotecommands.firebase.FirebaseConstants.SEPARATOR;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
@@ -26,7 +26,7 @@ public class TestData {
         }
 
         public static RemoteCommand.Response create(String commandId, String responseId, JSONObject payload) {
-            return new RemoteCommand.Response(commandId, responseId, payload);
+            return new RemoteCommand.Response(null, commandId, responseId, payload);
         }
 
         public static RemoteCommand.Response create(String responseId, JSONObject payload) {

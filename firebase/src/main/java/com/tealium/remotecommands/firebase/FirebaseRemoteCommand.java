@@ -7,18 +7,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.tealium.internal.tagbridge.RemoteCommand;
-
-import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
-import static com.tealium.remotecommands.firebase.FirebaseConstants.Commands;
-import static com.tealium.remotecommands.firebase.FirebaseConstants.Keys;
+import com.tealium.remotecommands.RemoteCommand;
 
 import org.json.JSONObject;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
 
-    FirebaseTrackable mFirebaseTrackable;
+    FirebaseCommand mFirebaseCommand;
     private static Activity mCurrentActivity;
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
@@ -53,7 +49,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         Application.ActivityLifecycleCallbacks cb = createActivityLifecycleCallbacks();
         application.registerActivityLifecycleCallbacks(cb);
 
-        mFirebaseTrackable = new FirebaseTracker(application.getApplicationContext());
+        mFirebaseCommand = new FirebaseInstance(application.getApplicationContext());
     }
 
     /**
@@ -69,7 +65,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
     }
 
     private String[] splitCommands(JSONObject payload) {
-        String commandString = payload.optString(Keys.COMMAND_NAME, "");
+        String commandString = payload.optString(FirebaseConstants.Keys.COMMAND_NAME, "");
         return commandString.split(FirebaseConstants.SEPARATOR);
     }
 
@@ -78,37 +74,37 @@ public class FirebaseRemoteCommand extends RemoteCommand {
             command = command.trim();
             try {
                 switch (command) {
-                    case Commands.CONFIGURE:
-                        mFirebaseTrackable.configure(
-                                payload.optInt(Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
-                                payload.optInt(Keys.MIN_SECONDS, sErrorTime) * 1000,
-                                payload.optBoolean(Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
+                    case FirebaseConstants.Commands.CONFIGURE:
+                        mFirebaseCommand.configure(
+                                payload.optInt(FirebaseConstants.Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
+                                payload.optInt(FirebaseConstants.Keys.MIN_SECONDS, sErrorTime) * 1000,
+                                payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
                         break;
-                    case Commands.LOG_EVENT:
-                        String eventName = payload.optString(Keys.EVENT_NAME, null);
-                        JSONObject params = payload.optJSONObject(Keys.EVENT_PARAMS);
-                        mFirebaseTrackable.logEvent(eventName, params);
+                    case FirebaseConstants.Commands.LOG_EVENT:
+                        String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
+                        JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        mFirebaseCommand.logEvent(eventName, params);
                         break;
-                    case Commands.SET_SCREEN_NAME:
-                        String screenName = payload.optString(Keys.SCREEN_NAME, null);
-                        String screenClass = payload.optString(Keys.SCREEN_CLASS, null);
-                        mFirebaseTrackable.setScreenName(mCurrentActivity, screenName, screenClass);
+                    case FirebaseConstants.Commands.SET_SCREEN_NAME:
+                        String screenName = payload.optString(FirebaseConstants.Keys.SCREEN_NAME, null);
+                        String screenClass = payload.optString(FirebaseConstants.Keys.SCREEN_CLASS, null);
+                        mFirebaseCommand.setScreenName(mCurrentActivity, screenName, screenClass);
                         break;
-                    case Commands.SET_USER_PROPERTY:
-                        String propertyName = payload.optString(Keys.USER_PROPERTY_NAME, null);
-                        String propertyValue = payload.optString(Keys.USER_PROPERTY_VALUE, null);
-                        mFirebaseTrackable.setUserProperty(propertyName, propertyValue);
+                    case FirebaseConstants.Commands.SET_USER_PROPERTY:
+                        String propertyName = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_NAME, null);
+                        String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
+                        mFirebaseCommand.setUserProperty(propertyName, propertyValue);
                         break;
-                    case Commands.SET_USER_ID:
-                        String userId = payload.optString(Keys.USER_ID, null);
-                        mFirebaseTrackable.setUserId(userId);
+                    case FirebaseConstants.Commands.SET_USER_ID:
+                        String userId = payload.optString(FirebaseConstants.Keys.USER_ID, null);
+                        mFirebaseCommand.setUserId(userId);
                         break;
-                    case Commands.RESET_DATA:
-                        mFirebaseTrackable.resetData();
+                    case FirebaseConstants.Commands.RESET_DATA:
+                        mFirebaseCommand.resetData();
                         break;
                 }
             } catch (Exception ex) {
-                Log.w(TAG, "Error processing command: " + command, ex);
+                Log.w(FirebaseConstants.TAG, "Error processing command: " + command, ex);
             }
         }
     }
@@ -126,12 +122,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
             @Override
             public void onActivityStarted(Activity activity) {
-		mCurrentActivity = activity;
+                mCurrentActivity = activity;
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-		mCurrentActivity = activity;
+                mCurrentActivity = activity;
             }
 
             @Override

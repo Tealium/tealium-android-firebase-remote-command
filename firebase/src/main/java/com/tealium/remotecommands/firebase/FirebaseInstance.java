@@ -16,9 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
-
-class FirebaseTracker implements FirebaseTrackable {
+class FirebaseInstance implements FirebaseCommand {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -128,7 +126,7 @@ class FirebaseTracker implements FirebaseTrackable {
         params.put("param_virtual_currency_name", FirebaseAnalytics.Param.VIRTUAL_CURRENCY_NAME);
     }
 
-    public FirebaseTracker(Context applicationContext) {
+    public FirebaseInstance(Context applicationContext) {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
     }
 
@@ -227,7 +225,7 @@ class FirebaseTracker implements FirebaseTrackable {
                         bundle.putString(firebaseKey, jsonObject.getString(key));
                 }
             } catch (JSONException ex) {
-                Log.d(TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as String.");
+                Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as String.");
                 if (!bundle.containsKey(firebaseKey)) {
                     bundle.putString(firebaseKey, jsonObject.getString(key));
                 }
