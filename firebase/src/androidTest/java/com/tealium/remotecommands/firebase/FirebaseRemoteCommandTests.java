@@ -12,7 +12,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -116,6 +115,32 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
     }
 
     @Test
+    public void testLogTagEventWithValidParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.EVENT_PARAMS.toString());
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidTagEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
     public void testLogEventWithInvalidParams() {
         List<String> expectedMethods = new ArrayList<>();
         expectedMethods.add(TestData.Methods.LOG_EVENT);
@@ -135,6 +160,32 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testLogTagEventWithInvalidParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertNull("Unexpected eventName value", eventName);
+                Assert.assertNull("Unexpected eventParams value", eventParams);
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getInvalidTagEvent());
             TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");

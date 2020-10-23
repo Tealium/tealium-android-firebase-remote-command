@@ -10,6 +10,7 @@ import com.tealium.lifecycle.Lifecycle
 import com.tealium.remotecommanddispatcher.RemoteCommands
 import com.tealium.remotecommanddispatcher.remoteCommands
 import com.tealium.remotecommands.firebase.FirebaseRemoteCommand
+import com.tealium.tagmanagementdispatcher.TagManagement
 
 object TealiumHelper {
     private const val TAG = "TealiumHelper"
@@ -26,8 +27,9 @@ object TealiumHelper {
                 Environment.DEV).apply {
             useRemoteLibrarySettings = true
             modules.add(Modules.Lifecycle)
+
             // TagManagement controlled RemoteCommand
-            // dispatchers.add(Dispatchers.TagManagement)
+//             dispatchers.add(Dispatchers.TagManagement)
 
             // JSON controlled RemoteCommand
             dispatchers.add(Dispatchers.RemoteCommands)
@@ -37,7 +39,7 @@ object TealiumHelper {
 
         Tealium.create(TEALIUM_MAIN, config) {
             // Remote Command Tag - requires TiQ
-            // remoteCommands?.add(brc)
+//             remoteCommands?.add(firebaseRemoteCommand)
 
             // JSON Remote Command - requires filename
             remoteCommands?.add(firebaseRemoteCommand, "firebase.json")

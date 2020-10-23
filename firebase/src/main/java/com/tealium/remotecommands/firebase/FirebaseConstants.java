@@ -29,7 +29,7 @@ public final class FirebaseConstants {
         public static final String LOG_LEVEL = "firebase_log_level";
         public static final String EVENT_NAME = "firebase_event_name";
         public static final String EVENT_PARAMS = "event";
-        //        public static final String EVENT_PARAMS = "firebase_event_params";
+        public static final String TAG_EVENT_PARAMS = "firebase_event_params";
         public static final String SCREEN_NAME = "firebase_screen_name";
         public static final String SCREEN_CLASS = "firebase_screen_class";
         public static final String USER_PROPERTY_NAME = "firebase_property_name";
