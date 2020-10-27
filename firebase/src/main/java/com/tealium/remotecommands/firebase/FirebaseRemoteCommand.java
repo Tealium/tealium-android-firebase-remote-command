@@ -72,6 +72,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         for (String command : commandList) {
             command = command.trim().toLowerCase();
             try {
+                Log.i("Firebase-RemoteCommand", "Processing command: " + command + ", with Payload: " + payload.toString());
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
@@ -82,8 +83,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.LOG_EVENT:
                         String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
                         JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
                         if (params == null) {
                             params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
+                        }
+                        if (items != null) {
+                            params.put(FirebaseConstants.Keys.ITEMS_PARAMS, items);
                         }
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
