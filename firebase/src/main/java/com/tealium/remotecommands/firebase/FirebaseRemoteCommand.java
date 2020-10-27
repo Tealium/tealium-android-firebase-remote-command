@@ -72,7 +72,6 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         for (String command : commandList) {
             command = command.trim().toLowerCase();
             try {
-                Log.i("Firebase-RemoteCommand", "Processing command: " + command + ", with Payload: " + payload.toString());
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
