@@ -47,7 +47,7 @@ public final class FirebaseConstants {
         public static final String CATEGORY ="param_item_category";
         public static final String NAME ="param_item_name";
         public static final String PRICE ="param_price";
-        public static final String QUANTITY ="param_item_quantity";
+        public static final String QUANTITY ="param_quantity";
         public static final String INDEX ="param_index";
         public static final String LIST ="param_item_list";
         public static final String LOCATION_ID ="param_item_location_id";

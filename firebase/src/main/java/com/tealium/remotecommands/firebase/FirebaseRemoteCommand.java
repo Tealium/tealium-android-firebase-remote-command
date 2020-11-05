@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class FirebaseRemoteCommand extends RemoteCommand {
 
     FirebaseCommand mFirebaseCommand;
@@ -74,7 +76,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         for (String command : commandList) {
             command = command.trim().toLowerCase();
             try {
-                Log.i("Tealium Firebase", "Processing command: " + command + " with payload: " + payload.toString());
+                Log.i(FirebaseConstants.TAG, "Processing command: " + command + " with payload: " + payload.toString());
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
@@ -220,36 +222,29 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                 }
             } else {
                 JSONObject item = new JSONObject();
-                if (!json.optString(FirebaseConstants.ItemProperties.ID).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.ID, json.getString(FirebaseConstants.ItemProperties.ID));
+                Iterator iter = json.keys();
+                while (iter.hasNext()) {
+                    String key = (String) iter.next();
+                    try {
+                        switch (key) {
+                            case FirebaseConstants.ItemProperties.ID:
+                            case FirebaseConstants.ItemProperties.BRAND:
+                            case FirebaseConstants.ItemProperties.CATEGORY:
+                            case FirebaseConstants.ItemProperties.NAME:
+                            case FirebaseConstants.ItemProperties.PRICE:
+                            case FirebaseConstants.ItemProperties.QUANTITY:
+                            case FirebaseConstants.ItemProperties.INDEX:
+                            case FirebaseConstants.ItemProperties.LIST:
+                            case FirebaseConstants.ItemProperties.LOCATION_ID:
+                            case FirebaseConstants.ItemProperties.VARIANT:
+                                item.put(key, json.get(key));
+                            default:
+                        }
+                    } catch (JSONException ex) {
+                        Log.d(FirebaseConstants.TAG, "Error converting value for key: " + key + ".");
+                    }
                 }
-                if (!json.optString(FirebaseConstants.ItemProperties.BRAND).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.BRAND, json.getString(FirebaseConstants.ItemProperties.BRAND));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.CATEGORY).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.CATEGORY, json.getString(FirebaseConstants.ItemProperties.CATEGORY));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.NAME).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.NAME, json.getString(FirebaseConstants.ItemProperties.NAME));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.PRICE).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.PRICE, json.getString(FirebaseConstants.ItemProperties.PRICE));
-                }
-                if (json.optInt(FirebaseConstants.ItemProperties.QUANTITY) > 0) {
-                    item.put(FirebaseConstants.ItemProperties.QUANTITY, json.getInt(FirebaseConstants.ItemProperties.QUANTITY));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.INDEX).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.INDEX, json.getInt(FirebaseConstants.ItemProperties.INDEX));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.LIST).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.LIST, json.getString(FirebaseConstants.ItemProperties.LIST));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.LOCATION_ID).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.LOCATION_ID, json.getString(FirebaseConstants.ItemProperties.LOCATION_ID));
-                }
-                if (!json.optString(FirebaseConstants.ItemProperties.VARIANT).equals("")) {
-                    item.put(FirebaseConstants.ItemProperties.VARIANT, json.getString(FirebaseConstants.ItemProperties.VARIANT));
-                }
+
                 res.put(item);
             }
 
