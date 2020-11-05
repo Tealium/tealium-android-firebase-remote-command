@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.tealium.remotecommands.RemoteCommand;
@@ -13,8 +12,6 @@ import com.tealium.remotecommands.RemoteCommand;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Iterator;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
