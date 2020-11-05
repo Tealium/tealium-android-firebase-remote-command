@@ -193,7 +193,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
     }
 
     @Test
-    public void testLogEventWithValidEcommerceParams() {
+    public void testLogEventWithValidTagEcommerceParams() {
         List<String> expectedMethods = new ArrayList<>();
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
@@ -204,7 +204,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 super.logEvent(eventName, eventParams);
 
                 Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
-                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.ECOMMERCE_PARAMS.toString());
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.TAG_ECOMMERCE_PARAMS.toString());
 
                 try {
                     Bundle paramBundle = jsonToBundle(eventParams);
@@ -229,7 +229,51 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         mockRemoteCommand.setCommand(mockInstance);
 
         try {
-            mockRemoteCommand.onInvoke(TestData.Responses.getValidEcommerceEvent());
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidTagEcommerceEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testLogEventWithValidJsonEcommerceParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.JSON_ECOMMERCE_PARAMS.toString());
+
+                try {
+                    Bundle paramBundle = jsonToBundle(eventParams);
+                    Assert.assertEquals("Value does not match.", 40.00D, paramBundle.getDouble(FirebaseAnalytics.Param.VALUE), 0D);
+                    Assert.assertEquals("Tax does not match.", 10.00D, paramBundle.getDouble(FirebaseAnalytics.Param.TAX), 0D);
+                    Assert.assertEquals("Shipping does not match.", 8.00D, paramBundle.getDouble(FirebaseAnalytics.Param.SHIPPING), 0D);
+                    Assert.assertEquals("Currency does not match.", "GBP", paramBundle.getString(FirebaseAnalytics.Param.CURRENCY));
+
+                    Parcelable[] itemsBundle = paramBundle.getParcelableArray("items");
+                    Assert.assertEquals("Item count does not match.", 2, itemsBundle.length);
+                    for (Parcelable item : itemsBundle) {
+                        Bundle itemBundle = (Bundle) item;
+                        Assert.assertEquals("Item Id does not match.", "SKU123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
+                        Assert.assertEquals("Item Name does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
+                    }
+                } catch (JSONException jex) {
+                    Assert.fail();
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidJsonEcommerceEvent());
             TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
