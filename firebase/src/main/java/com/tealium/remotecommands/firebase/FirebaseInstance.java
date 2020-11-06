@@ -32,9 +32,7 @@ class FirebaseInstance implements FirebaseCommand {
         eventsMap.put("event_app_open", FirebaseAnalytics.Event.APP_OPEN);
         eventsMap.put("event_begin_checkout", FirebaseAnalytics.Event.BEGIN_CHECKOUT);
         eventsMap.put("event_campaign_details", FirebaseAnalytics.Event.CAMPAIGN_DETAILS);
-        eventsMap.put("event_checkout_progress", FirebaseAnalytics.Event.CHECKOUT_PROGRESS);
         eventsMap.put("event_earn_virtual_currency", FirebaseAnalytics.Event.EARN_VIRTUAL_CURRENCY);
-        eventsMap.put("event_ecommerce_purchase", FirebaseAnalytics.Event.ECOMMERCE_PURCHASE);
         eventsMap.put("event_generate_lead", FirebaseAnalytics.Event.GENERATE_LEAD);
         eventsMap.put("event_join_group", FirebaseAnalytics.Event.JOIN_GROUP);
         eventsMap.put("event_level_end", FirebaseAnalytics.Event.LEVEL_END);
@@ -42,16 +40,13 @@ class FirebaseInstance implements FirebaseCommand {
         eventsMap.put("event_level_up", FirebaseAnalytics.Event.LEVEL_UP);
         eventsMap.put("event_login", FirebaseAnalytics.Event.LOGIN);
         eventsMap.put("event_post_score", FirebaseAnalytics.Event.POST_SCORE);
-        eventsMap.put("event_present_offer", FirebaseAnalytics.Event.PRESENT_OFFER);
         eventsMap.put("event_purchase", FirebaseAnalytics.Event.PURCHASE);
-        eventsMap.put("event_purchase_refund", FirebaseAnalytics.Event.PURCHASE_REFUND);
         eventsMap.put("event_refund", FirebaseAnalytics.Event.REFUND);
         eventsMap.put("event_remove_cart", FirebaseAnalytics.Event.REMOVE_FROM_CART);
         eventsMap.put("event_search", FirebaseAnalytics.Event.SEARCH);
         eventsMap.put("event_select_content", FirebaseAnalytics.Event.SELECT_CONTENT);
         eventsMap.put("event_select_item", FirebaseAnalytics.Event.SELECT_ITEM);
         eventsMap.put("event_select_promotion", FirebaseAnalytics.Event.SELECT_PROMOTION);
-        eventsMap.put("event_set_checkout_option", FirebaseAnalytics.Event.SET_CHECKOUT_OPTION);
         eventsMap.put("event_share", FirebaseAnalytics.Event.SHARE);
         eventsMap.put("event_signup", FirebaseAnalytics.Event.SIGN_UP);
         eventsMap.put("event_spend_virtual_currency", FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY);
@@ -71,8 +66,6 @@ class FirebaseInstance implements FirebaseCommand {
         params.put("param_cp1", FirebaseAnalytics.Param.CP1);
         params.put("param_campaign", FirebaseAnalytics.Param.CAMPAIGN);
         params.put("param_character", FirebaseAnalytics.Param.CHARACTER);
-        params.put("param_checkout_option", FirebaseAnalytics.Param.CHECKOUT_OPTION);
-        params.put("param_checkout_step", FirebaseAnalytics.Param.CHECKOUT_STEP);
         params.put("param_content", FirebaseAnalytics.Param.CONTENT);
         params.put("param_content_type", FirebaseAnalytics.Param.CONTENT_TYPE);
         params.put("param_coupon", FirebaseAnalytics.Param.COUPON);
@@ -90,10 +83,8 @@ class FirebaseInstance implements FirebaseCommand {
         params.put("param_item_brand", FirebaseAnalytics.Param.ITEM_BRAND);
         params.put("param_item_category", FirebaseAnalytics.Param.ITEM_CATEGORY);
         params.put("param_item_id", FirebaseAnalytics.Param.ITEM_ID);
-        params.put("param_item_list", FirebaseAnalytics.Param.ITEM_LIST);
         params.put("param_item_list_id", FirebaseAnalytics.Param.ITEM_LIST_ID);
         params.put("param_item_list_name", FirebaseAnalytics.Param.ITEM_LIST_NAME);
-        params.put("param_item_location_id", FirebaseAnalytics.Param.ITEM_LOCATION_ID);
         params.put("param_item_name", FirebaseAnalytics.Param.ITEM_NAME);
         params.put("param_item_variant", FirebaseAnalytics.Param.ITEM_VARIANT);
         params.put("param_level", FirebaseAnalytics.Param.LEVEL);
