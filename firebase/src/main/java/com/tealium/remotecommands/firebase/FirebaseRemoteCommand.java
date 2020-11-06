@@ -92,7 +92,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                             params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
                         }
                         if (items != null) {
-                            params.put("param_items", splitItems(items));
+                            params.put("param_items", itemsParamsToJsonArray(items));
                         }
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
@@ -162,17 +162,17 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         };
     }
 
-    private JSONArray splitItems(JSONObject itemsParam) {
+    private JSONArray itemsParamsToJsonArray(JSONObject itemsParam) {
         JSONArray res = new JSONArray();
         String key = itemsParam.keys().next();
 
         try {
             if (itemsParam.get(key) instanceof JSONArray) {
                 // split array of items
-                return splitItemsArray(itemsParam, itemsParam.getJSONArray(key).length());
+                return formatItems(itemsParam, itemsParam.getJSONArray(key).length());
             } else {
                 // format single item
-                return splitItemsArray(itemsParam, 1);
+                return formatItems(itemsParam, 1);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -181,7 +181,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         return res;
     }
 
-    private JSONArray splitItemsArray(JSONObject json, int numItems) {
+    private JSONArray formatItems(JSONObject json, int numItems) {
         JSONArray res = new JSONArray();
         try {
             if (numItems > 1) {
