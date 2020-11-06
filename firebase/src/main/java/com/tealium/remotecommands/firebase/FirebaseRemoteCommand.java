@@ -239,6 +239,8 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                             case FirebaseConstants.ItemProperties.VARIANT:
                                 item.put(key, json.get(key));
                             default:
+                                Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
+                                break;
                         }
                     } catch (JSONException ex) {
                         Log.d(FirebaseConstants.TAG, "Error converting value for key: " + key + ".");
