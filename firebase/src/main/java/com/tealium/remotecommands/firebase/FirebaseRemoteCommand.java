@@ -163,22 +163,19 @@ public class FirebaseRemoteCommand extends RemoteCommand {
     }
 
     private JSONArray itemsParamsToJsonArray(JSONObject itemsParam) {
-        JSONArray res = new JSONArray();
-        String key = itemsParam.keys().next();
-
         try {
-            if (itemsParam.get(key) instanceof JSONArray) {
+            if (itemsParam.get(FirebaseConstants.ItemProperties.ID) instanceof JSONArray) {
                 // split array of items
-                return formatItems(itemsParam, itemsParam.getJSONArray(key).length());
+                return formatItems(itemsParam, itemsParam.getJSONArray(FirebaseConstants.ItemProperties.ID).length());
             } else {
                 // format single item
                 return formatItems(itemsParam, 1);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
         }
 
-        return res;
+        return new JSONArray();
     }
 
     private JSONArray formatItems(JSONObject json, int numItems) {
@@ -225,33 +222,28 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                 Iterator iter = json.keys();
                 while (iter.hasNext()) {
                     String key = (String) iter.next();
-                    try {
-                        switch (key) {
-                            case FirebaseConstants.ItemProperties.ID:
-                            case FirebaseConstants.ItemProperties.BRAND:
-                            case FirebaseConstants.ItemProperties.CATEGORY:
-                            case FirebaseConstants.ItemProperties.NAME:
-                            case FirebaseConstants.ItemProperties.PRICE:
-                            case FirebaseConstants.ItemProperties.QUANTITY:
-                            case FirebaseConstants.ItemProperties.INDEX:
-                            case FirebaseConstants.ItemProperties.LIST:
-                            case FirebaseConstants.ItemProperties.LOCATION_ID:
-                            case FirebaseConstants.ItemProperties.VARIANT:
-                                item.put(key, json.get(key));
-                            default:
-                                Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
-                                break;
-                        }
-                    } catch (JSONException ex) {
-                        Log.d(FirebaseConstants.TAG, "Error converting value for key: " + key + ".");
+                    switch (key) {
+                        case FirebaseConstants.ItemProperties.ID:
+                        case FirebaseConstants.ItemProperties.BRAND:
+                        case FirebaseConstants.ItemProperties.CATEGORY:
+                        case FirebaseConstants.ItemProperties.NAME:
+                        case FirebaseConstants.ItemProperties.PRICE:
+                        case FirebaseConstants.ItemProperties.QUANTITY:
+                        case FirebaseConstants.ItemProperties.INDEX:
+                        case FirebaseConstants.ItemProperties.LIST:
+                        case FirebaseConstants.ItemProperties.LOCATION_ID:
+                        case FirebaseConstants.ItemProperties.VARIANT:
+                            item.put(key, json.get(key));
+                        default:
+                            Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
+                            break;
                     }
                 }
-
                 res.put(item);
             }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
         }
         return res;
     }
