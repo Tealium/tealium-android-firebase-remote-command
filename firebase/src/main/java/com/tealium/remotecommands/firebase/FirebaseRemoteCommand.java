@@ -9,7 +9,11 @@ import android.util.Log;
 
 import com.tealium.remotecommands.RemoteCommand;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
@@ -72,6 +76,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         for (String command : commandList) {
             command = command.trim().toLowerCase();
             try {
+                Log.i(FirebaseConstants.TAG, "Processing command: " + command + " with payload: " + payload.toString());
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
@@ -82,8 +87,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.LOG_EVENT:
                         String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
                         JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
                         if (params == null) {
                             params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
+                        }
+                        if (items != null) {
+                            params.put("param_items", itemsParamsToJsonArray(items));
                         }
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
@@ -110,7 +119,6 @@ public class FirebaseRemoteCommand extends RemoteCommand {
             }
         }
     }
-
 
     // Setup lifecycle callbacks to init FirebaseAnalytics. You may prefer to do this manually.
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -152,6 +160,92 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
             }
         };
+    }
+
+    private JSONArray itemsParamsToJsonArray(JSONObject itemsParam) {
+        try {
+            if (itemsParam.get(FirebaseConstants.ItemProperties.ID) instanceof JSONArray) {
+                // split array of items
+                return formatItems(itemsParam, itemsParam.getJSONArray(FirebaseConstants.ItemProperties.ID).length());
+            } else {
+                // format single item
+                return formatItems(itemsParam, 1);
+            }
+        } catch (JSONException e) {
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
+        }
+
+        return new JSONArray();
+    }
+
+    private JSONArray formatItems(JSONObject json, int numItems) {
+        JSONArray res = new JSONArray();
+        try {
+            if (numItems > 1) {
+                for (int i = 0; i < numItems; i++) {
+                    JSONObject item = new JSONObject();
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.ID) != null) {
+                        item.put(FirebaseConstants.ItemProperties.ID, json.getJSONArray(FirebaseConstants.ItemProperties.ID).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.BRAND) != null) {
+                        item.put(FirebaseConstants.ItemProperties.BRAND, json.getJSONArray(FirebaseConstants.ItemProperties.BRAND).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.CATEGORY) != null) {
+                        item.put(FirebaseConstants.ItemProperties.CATEGORY, json.getJSONArray(FirebaseConstants.ItemProperties.CATEGORY).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.NAME) != null) {
+                        item.put(FirebaseConstants.ItemProperties.NAME, json.getJSONArray(FirebaseConstants.ItemProperties.NAME).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.PRICE) != null) {
+                        item.put(FirebaseConstants.ItemProperties.PRICE, json.getJSONArray(FirebaseConstants.ItemProperties.PRICE).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.QUANTITY) != null) {
+                        item.put(FirebaseConstants.ItemProperties.QUANTITY, json.getJSONArray(FirebaseConstants.ItemProperties.QUANTITY).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.INDEX) != null) {
+                        item.put(FirebaseConstants.ItemProperties.INDEX, json.getJSONArray(FirebaseConstants.ItemProperties.INDEX).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.LIST) != null) {
+                        item.put(FirebaseConstants.ItemProperties.LIST, json.getJSONArray(FirebaseConstants.ItemProperties.LIST).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.LOCATION_ID) != null) {
+                        item.put(FirebaseConstants.ItemProperties.LOCATION_ID, json.getJSONArray(FirebaseConstants.ItemProperties.LOCATION_ID).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.VARIANT) != null) {
+                        item.put(FirebaseConstants.ItemProperties.VARIANT, json.getJSONArray(FirebaseConstants.ItemProperties.VARIANT).get(i));
+                    }
+
+                    res.put(item);
+                }
+            } else {
+                JSONObject item = new JSONObject();
+                Iterator iter = json.keys();
+                while (iter.hasNext()) {
+                    String key = (String) iter.next();
+                    switch (key) {
+                        case FirebaseConstants.ItemProperties.ID:
+                        case FirebaseConstants.ItemProperties.BRAND:
+                        case FirebaseConstants.ItemProperties.CATEGORY:
+                        case FirebaseConstants.ItemProperties.NAME:
+                        case FirebaseConstants.ItemProperties.PRICE:
+                        case FirebaseConstants.ItemProperties.QUANTITY:
+                        case FirebaseConstants.ItemProperties.INDEX:
+                        case FirebaseConstants.ItemProperties.LIST:
+                        case FirebaseConstants.ItemProperties.LOCATION_ID:
+                        case FirebaseConstants.ItemProperties.VARIANT:
+                            item.put(key, json.get(key));
+                        default:
+                            Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
+                            break;
+                    }
+                }
+                res.put(item);
+            }
+
+        } catch (JSONException e) {
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
+        }
+        return res;
     }
 
     /**
