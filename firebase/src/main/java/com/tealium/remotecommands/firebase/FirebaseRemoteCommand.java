@@ -7,18 +7,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.tealium.internal.tagbridge.RemoteCommand;
+import com.tealium.remotecommands.RemoteCommand;
 
-import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
-import static com.tealium.remotecommands.firebase.FirebaseConstants.Commands;
-import static com.tealium.remotecommands.firebase.FirebaseConstants.Keys;
-
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
-
-    FirebaseTrackable mFirebaseTrackable;
+    FirebaseCommand mFirebaseCommand;
     private static Activity mCurrentActivity;
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
@@ -53,7 +52,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         Application.ActivityLifecycleCallbacks cb = createActivityLifecycleCallbacks();
         application.registerActivityLifecycleCallbacks(cb);
 
-        mFirebaseTrackable = new FirebaseTracker(application.getApplicationContext());
+        mFirebaseCommand = new FirebaseInstance(application.getApplicationContext());
     }
 
     /**
@@ -69,50 +68,57 @@ public class FirebaseRemoteCommand extends RemoteCommand {
     }
 
     private String[] splitCommands(JSONObject payload) {
-        String commandString = payload.optString(Keys.COMMAND_NAME, "");
+        String commandString = payload.optString(FirebaseConstants.Keys.COMMAND_NAME, "");
         return commandString.split(FirebaseConstants.SEPARATOR);
     }
 
     private void parseCommands(String[] commandList, JSONObject payload) {
         for (String command : commandList) {
-            command = command.trim();
+            command = command.trim().toLowerCase();
             try {
+                Log.i(FirebaseConstants.TAG, "Processing command: " + command + " with payload: " + payload.toString());
                 switch (command) {
-                    case Commands.CONFIGURE:
-                        mFirebaseTrackable.configure(
-                                payload.optInt(Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
-                                payload.optInt(Keys.MIN_SECONDS, sErrorTime) * 1000,
-                                payload.optBoolean(Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
+                    case FirebaseConstants.Commands.CONFIGURE:
+                        mFirebaseCommand.configure(
+                                payload.optInt(FirebaseConstants.Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
+                                payload.optInt(FirebaseConstants.Keys.MIN_SECONDS, sErrorTime) * 1000,
+                                payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
                         break;
-                    case Commands.LOG_EVENT:
-                        String eventName = payload.optString(Keys.EVENT_NAME, null);
-                        JSONObject params = payload.optJSONObject(Keys.EVENT_PARAMS);
-                        mFirebaseTrackable.logEvent(eventName, params);
+                    case FirebaseConstants.Commands.LOG_EVENT:
+                        String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
+                        JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
+                        if (params == null) {
+                            params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
+                        }
+                        if (items != null) {
+                            params.put("param_items", itemsParamsToJsonArray(items));
+                        }
+                        mFirebaseCommand.logEvent(eventName, params);
                         break;
-                    case Commands.SET_SCREEN_NAME:
-                        String screenName = payload.optString(Keys.SCREEN_NAME, null);
-                        String screenClass = payload.optString(Keys.SCREEN_CLASS, null);
-                        mFirebaseTrackable.setScreenName(mCurrentActivity, screenName, screenClass);
+                    case FirebaseConstants.Commands.SET_SCREEN_NAME:
+                        String screenName = payload.optString(FirebaseConstants.Keys.SCREEN_NAME, null);
+                        String screenClass = payload.optString(FirebaseConstants.Keys.SCREEN_CLASS, null);
+                        mFirebaseCommand.setScreenName(mCurrentActivity, screenName, screenClass);
                         break;
-                    case Commands.SET_USER_PROPERTY:
-                        String propertyName = payload.optString(Keys.USER_PROPERTY_NAME, null);
-                        String propertyValue = payload.optString(Keys.USER_PROPERTY_VALUE, null);
-                        mFirebaseTrackable.setUserProperty(propertyName, propertyValue);
+                    case FirebaseConstants.Commands.SET_USER_PROPERTY:
+                        String propertyName = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_NAME, null);
+                        String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
+                        mFirebaseCommand.setUserProperty(propertyName, propertyValue);
                         break;
-                    case Commands.SET_USER_ID:
-                        String userId = payload.optString(Keys.USER_ID, null);
-                        mFirebaseTrackable.setUserId(userId);
+                    case FirebaseConstants.Commands.SET_USER_ID:
+                        String userId = payload.optString(FirebaseConstants.Keys.USER_ID, null);
+                        mFirebaseCommand.setUserId(userId);
                         break;
-                    case Commands.RESET_DATA:
-                        mFirebaseTrackable.resetData();
+                    case FirebaseConstants.Commands.RESET_DATA:
+                        mFirebaseCommand.resetData();
                         break;
                 }
             } catch (Exception ex) {
-                Log.w(TAG, "Error processing command: " + command, ex);
+                Log.w(FirebaseConstants.TAG, "Error processing command: " + command, ex);
             }
         }
     }
-
 
     // Setup lifecycle callbacks to init FirebaseAnalytics. You may prefer to do this manually.
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -126,12 +132,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
             @Override
             public void onActivityStarted(Activity activity) {
-		mCurrentActivity = activity;
+                mCurrentActivity = activity;
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-		mCurrentActivity = activity;
+                mCurrentActivity = activity;
             }
 
             @Override
@@ -154,6 +160,92 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
             }
         };
+    }
+
+    private JSONArray itemsParamsToJsonArray(JSONObject itemsParam) {
+        try {
+            if (itemsParam.get(FirebaseConstants.ItemProperties.ID) instanceof JSONArray) {
+                // split array of items
+                return formatItems(itemsParam, itemsParam.getJSONArray(FirebaseConstants.ItemProperties.ID).length());
+            } else {
+                // format single item
+                return formatItems(itemsParam, 1);
+            }
+        } catch (JSONException e) {
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
+        }
+
+        return new JSONArray();
+    }
+
+    private JSONArray formatItems(JSONObject json, int numItems) {
+        JSONArray res = new JSONArray();
+        try {
+            if (numItems > 1) {
+                for (int i = 0; i < numItems; i++) {
+                    JSONObject item = new JSONObject();
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.ID) != null) {
+                        item.put(FirebaseConstants.ItemProperties.ID, json.getJSONArray(FirebaseConstants.ItemProperties.ID).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.BRAND) != null) {
+                        item.put(FirebaseConstants.ItemProperties.BRAND, json.getJSONArray(FirebaseConstants.ItemProperties.BRAND).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.CATEGORY) != null) {
+                        item.put(FirebaseConstants.ItemProperties.CATEGORY, json.getJSONArray(FirebaseConstants.ItemProperties.CATEGORY).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.NAME) != null) {
+                        item.put(FirebaseConstants.ItemProperties.NAME, json.getJSONArray(FirebaseConstants.ItemProperties.NAME).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.PRICE) != null) {
+                        item.put(FirebaseConstants.ItemProperties.PRICE, json.getJSONArray(FirebaseConstants.ItemProperties.PRICE).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.QUANTITY) != null) {
+                        item.put(FirebaseConstants.ItemProperties.QUANTITY, json.getJSONArray(FirebaseConstants.ItemProperties.QUANTITY).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.INDEX) != null) {
+                        item.put(FirebaseConstants.ItemProperties.INDEX, json.getJSONArray(FirebaseConstants.ItemProperties.INDEX).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.LIST) != null) {
+                        item.put(FirebaseConstants.ItemProperties.LIST, json.getJSONArray(FirebaseConstants.ItemProperties.LIST).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.LOCATION_ID) != null) {
+                        item.put(FirebaseConstants.ItemProperties.LOCATION_ID, json.getJSONArray(FirebaseConstants.ItemProperties.LOCATION_ID).get(i));
+                    }
+                    if (json.optJSONArray(FirebaseConstants.ItemProperties.VARIANT) != null) {
+                        item.put(FirebaseConstants.ItemProperties.VARIANT, json.getJSONArray(FirebaseConstants.ItemProperties.VARIANT).get(i));
+                    }
+
+                    res.put(item);
+                }
+            } else {
+                JSONObject item = new JSONObject();
+                Iterator iter = json.keys();
+                while (iter.hasNext()) {
+                    String key = (String) iter.next();
+                    switch (key) {
+                        case FirebaseConstants.ItemProperties.ID:
+                        case FirebaseConstants.ItemProperties.BRAND:
+                        case FirebaseConstants.ItemProperties.CATEGORY:
+                        case FirebaseConstants.ItemProperties.NAME:
+                        case FirebaseConstants.ItemProperties.PRICE:
+                        case FirebaseConstants.ItemProperties.QUANTITY:
+                        case FirebaseConstants.ItemProperties.INDEX:
+                        case FirebaseConstants.ItemProperties.LIST:
+                        case FirebaseConstants.ItemProperties.LOCATION_ID:
+                        case FirebaseConstants.ItemProperties.VARIANT:
+                            item.put(key, json.get(key));
+                        default:
+                            Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
+                            break;
+                    }
+                }
+                res.put(item);
+            }
+
+        } catch (JSONException e) {
+            Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
+        }
+        return res;
     }
 
     /**

@@ -12,7 +12,7 @@ public class MockFirebaseRemoteCommand extends FirebaseRemoteCommand {
         super(application, commandId, description);
     }
 
-    public void setTrackable(FirebaseTrackable trackable) {
-        mFirebaseTrackable = trackable;
+    public void setCommand(FirebaseCommand command) {
+        mFirebaseCommand = command;
     }
 }

@@ -33,7 +33,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
         TealiumHelper.trackScreen(this, "User Details");
     }
-    
+
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn_set_user_id) {

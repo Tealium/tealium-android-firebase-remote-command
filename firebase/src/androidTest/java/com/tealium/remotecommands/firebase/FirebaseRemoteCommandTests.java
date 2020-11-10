@@ -12,7 +12,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,17 +31,12 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         return new MockFirebaseRemoteCommand(QAActivity.getActivity().getApplication());
     }
 
-    public MockFirebaseTracker newMockFirebaseWrapper() {
-        return new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext());
+    public MockFirebaseInstance newMockFirebaseWrapper() {
+        return new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext());
     }
 
     @Rule
     public ActivityTestRule<QAActivity> QAActivity = new ActivityTestRule<>(com.tealium.remotecommands.firebase.QAActivity.class);
-
-    @Before
-    public void setup() {
-        TestUtils.setupInstance(QAActivity.getActivity().getApplication());
-    }
 
     @Test
     public void testConfigureWithValidParams() {
@@ -50,7 +44,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplication()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplication()) {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
@@ -59,11 +53,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 Assert.assertSame("Unexpected analyticsEnabled value", analyticsEnabled, TestData.Values.ANALYTICS_ENABLED_FALSE);
             }
         };
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidConfig());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -75,7 +69,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplication()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplication()) {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
@@ -84,11 +78,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 Assert.assertTrue("Unexpected analyticsEnabled value", analyticsEnabled);
             }
         };
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidConfig());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -100,7 +94,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -110,11 +104,37 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidEvent());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testLogTagEventWithValidParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.EVENT_PARAMS.toString());
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidTagEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -126,7 +146,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -136,29 +156,55 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidEvent());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
     }
 
     @Test
-    public void testLogEventWithValidEcommerceParams() {
+    public void testLogTagEventWithInvalidParams() {
         List<String> expectedMethods = new ArrayList<>();
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertNull("Unexpected eventName value", eventName);
+                Assert.assertNull("Unexpected eventParams value", eventParams);
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getInvalidTagEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testLogEventWithValidTagEcommerceParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
 
                 Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
-                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.ECOMMERCE_PARAMS.toString());
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.TAG_ECOMMERCE_PARAMS.toString());
 
                 try {
                     Bundle paramBundle = jsonToBundle(eventParams);
@@ -180,11 +226,55 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
-            mockRemoteCommand.onInvoke(TestData.Responses.getValidEcommerceEvent());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidTagEcommerceEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testLogEventWithValidJsonEcommerceParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+
+                Assert.assertEquals("Unexpected eventName value", eventName, TestData.Values.EVENT_NAME);
+                Assert.assertEquals("Unexpected eventParams value", eventParams.toString(), TestData.Values.JSON_ECOMMERCE_PARAMS.toString());
+
+                try {
+                    Bundle paramBundle = jsonToBundle(eventParams);
+                    Assert.assertEquals("Value does not match.", 40.00D, paramBundle.getDouble(FirebaseAnalytics.Param.VALUE), 0D);
+                    Assert.assertEquals("Tax does not match.", 10.00D, paramBundle.getDouble(FirebaseAnalytics.Param.TAX), 0D);
+                    Assert.assertEquals("Shipping does not match.", 8.00D, paramBundle.getDouble(FirebaseAnalytics.Param.SHIPPING), 0D);
+                    Assert.assertEquals("Currency does not match.", "GBP", paramBundle.getString(FirebaseAnalytics.Param.CURRENCY));
+
+                    Parcelable[] itemsBundle = paramBundle.getParcelableArray("items");
+                    Assert.assertEquals("Item count does not match.", 2, itemsBundle.length);
+                    for (Parcelable item : itemsBundle) {
+                        Bundle itemBundle = (Bundle) item;
+                        Assert.assertEquals("Item Id does not match.", "SKU123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
+                        Assert.assertEquals("Item Name does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
+                    }
+                } catch (JSONException jex) {
+                    Assert.fail();
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidJsonEcommerceEvent());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -196,7 +286,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -216,11 +306,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidEcommerceEvent());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -232,7 +322,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -242,11 +332,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidScreenName());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -258,7 +348,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -268,11 +358,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidScreenName());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -284,7 +374,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -294,11 +384,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidUserProperty());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -310,7 +400,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -320,11 +410,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidUserProperty());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -336,7 +426,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -345,11 +435,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getValidUserId());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -361,7 +451,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = new MockFirebaseTracker(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -370,11 +460,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
             }
         };
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidUserId());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -386,13 +476,13 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.RESET_DATA);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = newMockFirebaseWrapper();
+        MockFirebaseInstance mockInstance = newMockFirebaseWrapper();
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getResetData());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
@@ -409,13 +499,13 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.RESET_DATA);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseTracker mockWrapper = newMockFirebaseWrapper();
+        MockFirebaseInstance mockInstance = newMockFirebaseWrapper();
 
-        mockRemoteCommand.setTrackable(mockWrapper);
+        mockRemoteCommand.setCommand(mockInstance);
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getCompositeData());
-            TestUtils.assertContainsAllAndOnly(mockWrapper.methodsCalled, expectedMethods);
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");
         }
