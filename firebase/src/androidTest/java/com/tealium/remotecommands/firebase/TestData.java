@@ -2,7 +2,7 @@ package com.tealium.remotecommands.firebase;
 
 import android.util.Log;
 
-import com.tealium.internal.tagbridge.RemoteCommand;
+import com.tealium.remotecommands.RemoteCommand;
 
 import static com.tealium.remotecommands.firebase.FirebaseConstants.SEPARATOR;
 import static com.tealium.remotecommands.firebase.FirebaseConstants.TAG;
@@ -26,7 +26,7 @@ public class TestData {
         }
 
         public static RemoteCommand.Response create(String commandId, String responseId, JSONObject payload) {
-            return new RemoteCommand.Response(commandId, responseId, payload);
+            return new RemoteCommand.Response(null, commandId, responseId, payload);
         }
 
         public static RemoteCommand.Response create(String responseId, JSONObject payload) {
@@ -79,6 +79,19 @@ public class TestData {
             return create(json);
         }
 
+        public static RemoteCommand.Response getValidTagEvent() throws JSONException {
+            JSONObject payload = new JSONObject();
+            try {
+                payload.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+                payload.put(Keys.EVENT_NAME, Values.EVENT_NAME);
+                payload.put(Keys.TAG_EVENT_PARAMS, Values.EVENT_PARAMS);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getValidTagEvent: ", jex);
+            }
+
+            return create(payload);
+        }
+
         public static RemoteCommand.Response getInvalidEvent() {
             JSONObject json = new JSONObject();
             try {
@@ -92,13 +105,39 @@ public class TestData {
             return create(json);
         }
 
-        public static RemoteCommand.Response getValidEcommerceEvent() {
+        public static RemoteCommand.Response getInvalidTagEvent() throws JSONException {
+            JSONObject payload = new JSONObject();
+            try {
+                payload.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+                payload.put(Keys.EVENT_NAME, null);
+                payload.put(Keys.TAG_EVENT_PARAMS, null);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getInvalidTagEvent: ", jex);
+            }
+
+            return create(payload);
+        }
+
+        public static RemoteCommand.Response getValidTagEcommerceEvent() {
             JSONObject json = new JSONObject();
             try {
                 json.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
 
                 json.put(Keys.EVENT_NAME, Values.EVENT_NAME);
-                json.put(Keys.EVENT_PARAMS, Values.ECOMMERCE_PARAMS);
+                json.put(Keys.EVENT_PARAMS, Values.TAG_ECOMMERCE_PARAMS);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getValidEvent: ", jex);
+            }
+            return create(json);
+        }
+
+        public static RemoteCommand.Response getValidJsonEcommerceEvent() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+
+                json.put(Keys.EVENT_NAME, Values.EVENT_NAME);
+                json.put(Keys.EVENT_PARAMS, Values.JSON_ECOMMERCE_PARAMS);
             } catch (JSONException jex) {
                 Log.w(TEST_TAG + "-Test", "getValidEvent: ", jex);
             }
@@ -238,7 +277,8 @@ public class TestData {
 
         public static final String EVENT_NAME = "TestEvent";
         public static final JSONObject EVENT_PARAMS = new JSONObject();
-        public static final JSONObject ECOMMERCE_PARAMS = new JSONObject();
+        public static final JSONObject TAG_ECOMMERCE_PARAMS = new JSONObject();
+        public static final JSONObject JSON_ECOMMERCE_PARAMS = new JSONObject();
         public static final JSONObject INVALID_ECOMMERCE_PARAMS = new JSONObject();
         public static final JSONArray ITEMS_ARRAY = new JSONArray();
         public static final JSONObject ITEMS_PARAMS = new JSONObject();
@@ -266,11 +306,17 @@ public class TestData {
                 ITEMS_ARRAY.put(ITEMS_PARAMS);
                 ITEMS_ARRAY.put(ITEMS_PARAMS);
 
-                ECOMMERCE_PARAMS.put("param_items", ITEMS_ARRAY);
-                ECOMMERCE_PARAMS.put("param_value", 40.00);
-                ECOMMERCE_PARAMS.put("param_tax", 10.00);
-                ECOMMERCE_PARAMS.put("param_shipping", 8.00);
-                ECOMMERCE_PARAMS.put("param_currency", "GBP");
+                TAG_ECOMMERCE_PARAMS.put("param_items", ITEMS_ARRAY);
+                TAG_ECOMMERCE_PARAMS.put("param_value", 40.00);
+                TAG_ECOMMERCE_PARAMS.put("param_tax", 10.00);
+                TAG_ECOMMERCE_PARAMS.put("param_shipping", 8.00);
+                TAG_ECOMMERCE_PARAMS.put("param_currency", "GBP");
+
+                JSON_ECOMMERCE_PARAMS.put("items", ITEMS_ARRAY);
+                JSON_ECOMMERCE_PARAMS.put("param_value", 40.00);
+                JSON_ECOMMERCE_PARAMS.put("param_tax", 10.00);
+                JSON_ECOMMERCE_PARAMS.put("param_shipping", 8.00);
+                JSON_ECOMMERCE_PARAMS.put("param_currency", "GBP");
 
                 INVALID_ECOMMERCE_PARAMS.put("param_value", "String-Value");
                 INVALID_ECOMMERCE_PARAMS.put("param_tax", "String-Tax");

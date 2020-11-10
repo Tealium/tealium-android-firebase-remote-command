@@ -8,9 +8,9 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MockFirebaseTracker extends FirebaseTracker {
+public class MockFirebaseInstance extends FirebaseInstance {
 
-    public MockFirebaseTracker(Context applicationContext) {
+    public MockFirebaseInstance(Context applicationContext) {
         super(applicationContext);
     }
 

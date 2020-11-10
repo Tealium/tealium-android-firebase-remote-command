@@ -46,7 +46,7 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
 
         updateBasket();
 
-        TealiumHelper.trackScreen(this, "Shop");
+        TealiumHelper.trackScreen(this, "shop");
     }
 
     @Override
@@ -58,13 +58,13 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
         switch (id) {
             case R.id.btn_ecom_category_view:
                 data.put(DataLayer.PRODUCT_CATEGORY, product.getProductCategory());
-                TealiumHelper.trackView("category", data);
+                TealiumHelper.trackEvent("category", data);
                 break;
             case R.id.btn_ecom_product_view:
                 data.put(DataLayer.PRODUCT_ID, product.getProductId());
                 data.put(DataLayer.PRODUCT_NAME, product.getProductName());
                 data.put(DataLayer.PRODUCT_CATEGORY, product.getProductCategory());
-                TealiumHelper.trackView("product", data);
+                TealiumHelper.trackEvent("product", data);
                 break;
             case R.id.btn_ecom_cart_add:
                 data.put(DataLayer.PRODUCT_ID, product.getProductId());
