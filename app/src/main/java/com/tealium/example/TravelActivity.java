@@ -8,6 +8,7 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 
@@ -52,7 +53,7 @@ public class TravelActivity extends AppCompatActivity implements View.OnClickLis
                 data.put(DataLayer.ORDER_CURRENCY, "GBP");
                 data.put(DataLayer.ORDER_TOTAL, 100.00);
                 data.put(DataLayer.ORDER_ID, "TRAVEL-ORD-12345");
-                TealiumHelper.trackEvent("travel_order", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.PURCHASE, data);
                 break;
         }
     }

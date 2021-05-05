@@ -152,7 +152,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 super.logEvent(eventName, eventParams);
 
                 Assert.assertNull("Unexpected eventName value", eventName);
-                Assert.assertNull("Unexpected eventParams value", eventParams);
+                Assert.assertEquals("{}", eventParams.toString());
             }
         };
 
@@ -178,7 +178,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                 super.logEvent(eventName, eventParams);
 
                 Assert.assertNull("Unexpected eventName value", eventName);
-                Assert.assertNull("Unexpected eventParams value", eventParams);
+                Assert.assertEquals("{}", eventParams.toString());
             }
         };
 

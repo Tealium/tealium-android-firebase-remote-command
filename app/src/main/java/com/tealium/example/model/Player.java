@@ -1,5 +1,6 @@
 package com.tealium.example.model;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 
@@ -43,7 +44,7 @@ public class Player {
         Map<String, Object> data = new HashMap<>();
         data.put(DataLayer.NUMBER_OF_TOKENS, amount);
         data.put(DataLayer.CURRENCY_TYPE, CURRENCY);
-        TealiumHelper.trackEvent("earn_currency", data);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.EARN_VIRTUAL_CURRENCY, data);
     }
 
     public void spendVirtualCurrency() {
@@ -60,7 +61,7 @@ public class Player {
         data.put(DataLayer.PRODUCT_NAME, "Beast Shield");
         data.put(DataLayer.CURRENCY_TYPE, CURRENCY);
         data.put(DataLayer.NUMBER_OF_TOKENS, amount);
-        TealiumHelper.trackEvent("spend_currency", data);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY, data);
     }
 
     public boolean canSpend(int amount) {
@@ -81,7 +82,7 @@ public class Player {
         Map<String, Object> data = new HashMap<>();
         data.put(DataLayer.LEVEL, mCurrentLevel);
         data.put(DataLayer.CHARACTER, mName);
-        TealiumHelper.trackEvent("level_up", data);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.LEVEL_UP, data);
     }
 
     public int getCurrenLevel() {
@@ -91,17 +92,17 @@ public class Player {
     public void unlockAchievement(String achievementId) {
         Map<String, Object> data = new HashMap<>();
         data.put(DataLayer.ACHIEVEMENT_ID, achievementId);
-        TealiumHelper.trackEvent("unlock_achievement", data);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT, data);
     }
 
     public void startTutorial() {
         mIsInTutorial = true;
-        TealiumHelper.trackEvent("start_tutorial", null);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, null);
     }
 
     public void stopTutorial() {
         mIsInTutorial = false;
-        TealiumHelper.trackEvent("stop_tutorial", null);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, null);
     }
 
     public boolean isInTutorial() {
