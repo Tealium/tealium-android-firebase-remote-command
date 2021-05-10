@@ -90,6 +90,9 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
                         if (params == null) {
                             params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
+                            if (params == null) {
+                                params = new JSONObject();
+                            }
                         }
                         if (items != null) {
                             params.put("param_items", itemsParamsToJsonArray(items));
@@ -234,6 +237,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         case FirebaseConstants.ItemProperties.LOCATION_ID:
                         case FirebaseConstants.ItemProperties.VARIANT:
                             item.put(key, json.get(key));
+                            break;
                         default:
                             Log.d(FirebaseConstants.TAG, "Invalid item param key: " + key + ".");
                             break;

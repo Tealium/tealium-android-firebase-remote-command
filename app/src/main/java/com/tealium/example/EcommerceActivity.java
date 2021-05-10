@@ -7,6 +7,7 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 import com.tealium.example.model.Basket;
@@ -58,13 +59,13 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
         switch (id) {
             case R.id.btn_ecom_category_view:
                 data.put(DataLayer.PRODUCT_CATEGORY, product.getProductCategory());
-                TealiumHelper.trackEvent("category", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, data);
                 break;
             case R.id.btn_ecom_product_view:
                 data.put(DataLayer.PRODUCT_ID, product.getProductId());
                 data.put(DataLayer.PRODUCT_NAME, product.getProductName());
                 data.put(DataLayer.PRODUCT_CATEGORY, product.getProductCategory());
-                TealiumHelper.trackEvent("product", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.VIEW_ITEM, data);
                 break;
             case R.id.btn_ecom_cart_add:
                 data.put(DataLayer.PRODUCT_ID, product.getProductId());
@@ -75,13 +76,13 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
 
                 data.put(DataLayer.ORDER_CURRENCY, "USD");
                 data.put(DataLayer.ORDER_TOTAL, product.getProductUnitPrice());
-                TealiumHelper.trackEvent("cart_add", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.ADD_TO_CART, data);
 
                 Basket.getInstance().addProduct(product);
                 updateBasket();
                 break;
             case R.id.btn_ecom_checkout:
-                TealiumHelper.trackEvent("checkout", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.BEGIN_CHECKOUT, data);
                 break;
             case R.id.btn_ecom_purchase:
                 data.put(DataLayer.PRODUCT_ID, product.getProductId());
@@ -93,7 +94,7 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
                 data.put(DataLayer.ORDER_CURRENCY, "USD");
                 data.put(DataLayer.ORDER_TOTAL, product.getProductUnitPrice());
                 data.put(DataLayer.ORDER_ID, "ORD-12345");
-                TealiumHelper.trackEvent("order", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.PURCHASE, data);
                 break;
             case R.id.btn_ecom_purchase_basket:
                 data.put(DataLayer.PRODUCT_ID, Basket.getInstance().getProductIds());
@@ -109,7 +110,7 @@ public class EcommerceActivity extends AppCompatActivity implements View.OnClick
                 Basket.getInstance().clear();
                 updateBasket();
 
-                TealiumHelper.trackEvent("order_basket", data);
+                TealiumHelper.trackEvent(FirebaseAnalytics.Event.PURCHASE, data);
                 break;
         }
     }

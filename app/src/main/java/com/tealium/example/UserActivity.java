@@ -8,6 +8,7 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 
@@ -46,6 +47,6 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         data.put(DataLayer.CUSTOMER_ID, mUserIdEditText.getText().toString());
         data.put(DataLayer.USERNAME, mUserPropertyValueEditText.getText().toString());
 
-        TealiumHelper.trackEvent("user_login", data);
+        TealiumHelper.trackEvent(FirebaseAnalytics.Event.LOGIN, data);
     }
 }
