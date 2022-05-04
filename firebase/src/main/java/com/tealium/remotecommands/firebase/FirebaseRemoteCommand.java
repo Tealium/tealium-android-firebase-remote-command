@@ -172,7 +172,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                 return formatItems(itemsParam, itemsParam.getJSONArray(FirebaseConstants.ItemProperties.ID).length());
             } else {
                 // format single item
-                return formatItems(itemsParam, 1);
+                return formatItems(itemsParam, 0);
             }
         } catch (JSONException e) {
             Log.d(FirebaseConstants.TAG, "Error formatting items param: " + e.toString());
@@ -184,7 +184,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
     private JSONArray formatItems(JSONObject json, int numItems) {
         JSONArray res = new JSONArray();
         try {
-            if (numItems > 1) {
+            if (numItems > 0) {
                 for (int i = 0; i < numItems; i++) {
                     JSONObject item = new JSONObject();
                     if (json.optJSONArray(FirebaseConstants.ItemProperties.ID) != null) {

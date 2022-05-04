@@ -281,6 +281,42 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
     }
 
     @Test
+    public void testLogEventWithItemsArray() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.LOG_EVENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+            @Override
+            public void logEvent(String eventName, JSONObject eventParams) {
+                super.logEvent(eventName, eventParams);
+                try {
+                    Bundle paramBundle = jsonToBundle(eventParams);
+                    Parcelable[] itemsBundle = paramBundle.getParcelableArray("items");
+                    Assert.assertEquals("Item count does not match.", 1, itemsBundle.length);
+                    for (Parcelable item : itemsBundle) {
+                        Bundle itemBundle = (Bundle) item;
+                        Assert.assertEquals("Item Id does not match.", "SKU123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
+                        Assert.assertEquals("Item Name does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
+                        Assert.assertEquals("Item Price does not match.", 28.00, itemBundle.getDouble(FirebaseAnalytics.Param.PRICE), 0.1);
+                    }
+                } catch (JSONException jex) {
+                    Assert.fail();
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidJsonWithItemsArray());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
     public void testLogEventWithInvalidEcommerceParams() {
         List<String> expectedMethods = new ArrayList<>();
         expectedMethods.add(TestData.Methods.LOG_EVENT);

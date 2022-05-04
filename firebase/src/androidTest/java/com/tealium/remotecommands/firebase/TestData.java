@@ -144,6 +144,18 @@ public class TestData {
             return create(json);
         }
 
+        public static RemoteCommand.Response getValidJsonWithItemsArray() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.LOG_EVENT);
+                json.put(Keys.EVENT_NAME, Values.EVENT_NAME);
+                json.put(Keys.ITEMS_PARAMS, Values.ITEMS_PARAMS_WITH_ARRAYS);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getValidEvent: ", jex);
+            }
+            return create(json);
+        }
+
         public static RemoteCommand.Response getInvalidEcommerceEvent() {
             JSONObject json = new JSONObject();
             try {
@@ -282,6 +294,8 @@ public class TestData {
         public static final JSONObject INVALID_ECOMMERCE_PARAMS = new JSONObject();
         public static final JSONArray ITEMS_ARRAY = new JSONArray();
         public static final JSONObject ITEMS_PARAMS = new JSONObject();
+        public static final JSONObject ITEMS_PARAMS_WITH_ARRAYS = new JSONObject();
+
 
         public static final String SCREEN_NAME = "TestScreenName";
         public static final String SCREEN_CLASS = "TestScreenClass";
@@ -302,6 +316,13 @@ public class TestData {
                 ITEMS_PARAMS.put("param_item_variant", "Variant 123");
                 ITEMS_PARAMS.put("param_item_brand", "Brand 123");
                 ITEMS_PARAMS.put("param_price", 28.00);
+
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_item_id", new JSONArray(new String[]{"SKU123"}));
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_item_name", new JSONArray(new String[]{"Item 123"}));
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_item_category", new JSONArray(new String[]{"Category 123"}));
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_item_variant", new JSONArray(new String[]{"Variant 123"}));
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_item_brand", new JSONArray(new String[]{"Brand 123"}));
+                ITEMS_PARAMS_WITH_ARRAYS.put("param_price", new JSONArray(new Double[]{28.00}));
 
                 ITEMS_ARRAY.put(ITEMS_PARAMS);
                 ITEMS_ARRAY.put(ITEMS_PARAMS);
