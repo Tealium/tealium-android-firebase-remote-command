@@ -297,8 +297,8 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
                     for (Parcelable item : itemsBundle) {
                         Bundle itemBundle = (Bundle) item;
                         Assert.assertEquals("Item Id does not match.", "SKU123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_ID));
-                        Assert.assertEquals("Item Id does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
-                        Assert.assertEquals("Item Id does not match.", 28.00, itemBundle.getDouble(FirebaseAnalytics.Param.PRICE), 0.1);
+                        Assert.assertEquals("Item Name does not match.", "Item 123", itemBundle.getString(FirebaseAnalytics.Param.ITEM_NAME));
+                        Assert.assertEquals("Item Price does not match.", 28.00, itemBundle.getDouble(FirebaseAnalytics.Param.PRICE), 0.1);
                     }
                 } catch (JSONException jex) {
                     Assert.fail();
