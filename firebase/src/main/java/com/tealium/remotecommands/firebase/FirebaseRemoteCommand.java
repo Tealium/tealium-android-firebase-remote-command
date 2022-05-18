@@ -47,7 +47,8 @@ public class FirebaseRemoteCommand extends RemoteCommand {
      */
     public FirebaseRemoteCommand(Application application, String commandId, String description) {
         super(commandId != null ? commandId : DEFAULT_COMMAND_ID,
-                description != null ? description : DEFAULT_COMMAND_DESCRIPTION);
+                description != null ? description : DEFAULT_COMMAND_DESCRIPTION,
+                BuildConfig.TEALIUM_FIREBASE_VERSION);
 
         Application.ActivityLifecycleCallbacks cb = createActivityLifecycleCallbacks();
         application.registerActivityLifecycleCallbacks(cb);
