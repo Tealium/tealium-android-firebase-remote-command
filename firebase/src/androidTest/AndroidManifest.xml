@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
 
-    <application>
-        <activity android:name=".QAActivity" />
-    </application>
+<!--    <application>-->
+<!--        <activity android:name=".QAActivity" android:exported="true" />-->
+<!--    </application>-->
 </manifest>

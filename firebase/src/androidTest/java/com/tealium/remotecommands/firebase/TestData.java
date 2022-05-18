@@ -258,6 +258,17 @@ public class TestData {
             return create(json);
         }
 
+        public static RemoteCommand.Response getDefaultParameters() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.SET_DEFAULT_PARAMETERS);
+                json.put(Keys.DEFAULT_PARAMS, Values.DEFAULT_PARAMS);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getDefaultParameters: ", jex);
+            }
+            return create(json);
+        }
+
         public static RemoteCommand.Response getCompositeData() {
             JSONObject json = new JSONObject();
             try {
@@ -272,13 +283,14 @@ public class TestData {
                 json.put(Keys.COMMAND_NAME, String.join(SEPARATOR, commandList));
 
             } catch (JSONException jex) {
-                Log.w(TEST_TAG + "-Test", "getResetData: ", jex);
+                Log.w(TEST_TAG + "-Test", "getCompositeData: ", jex);
             }
             return create(json);
         }
     }
 
     public static final class Values {
+
         private Values() {
         }
 
@@ -295,6 +307,7 @@ public class TestData {
         public static final JSONArray ITEMS_ARRAY = new JSONArray();
         public static final JSONObject ITEMS_PARAMS = new JSONObject();
         public static final JSONObject ITEMS_PARAMS_WITH_ARRAYS = new JSONObject();
+        public static final JSONObject DEFAULT_PARAMS = new JSONObject();
 
 
         public static final String SCREEN_NAME = "TestScreenName";
@@ -343,6 +356,9 @@ public class TestData {
                 INVALID_ECOMMERCE_PARAMS.put("param_tax", "String-Tax");
                 INVALID_ECOMMERCE_PARAMS.put("param_shipping", "String-Shipping");
                 INVALID_ECOMMERCE_PARAMS.put("param_currency", null);
+
+                DEFAULT_PARAMS.put("search_keyword", "test");
+                DEFAULT_PARAMS.put("default_data", "value");
             } catch (JSONException ignored) {
 
             }
@@ -359,6 +375,7 @@ public class TestData {
         public static final String SET_USER_ID = "setUserId";
         public static final String SET_SCREEN_NAME = "setScreenName";
         public static final String RESET_DATA = "resetData";
+        public static final String SET_DEFAULT_PARAMETERS = "setDefaultEventParameters";
     }
 
 }

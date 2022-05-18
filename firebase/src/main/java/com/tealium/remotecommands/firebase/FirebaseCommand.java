@@ -15,7 +15,16 @@ interface FirebaseCommand {
      * @param minSeconds
      * @param analyticsEnabled
      */
+    @Deprecated
     void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled);
+
+    /**
+     * Configures the Timeout, and Minimum Session Duration as well as whether to enable Analytics.
+     *
+     * @param timeout
+     * @param analyticsEnabled
+     */
+    void configure(Integer timeout, Boolean analyticsEnabled);
 
     /**
      * Logs an event for the given eventName and eventParams.
@@ -32,6 +41,7 @@ interface FirebaseCommand {
      * @param screenName
      * @param screenClass
      */
+    @Deprecated
     void setScreenName(Activity currentActivity, String screenName, String screenClass);
 
     /**
@@ -54,4 +64,10 @@ interface FirebaseCommand {
      */
     void resetData();
 
+    /**
+     * Sets default event parameters that should be present on all events.
+     *
+     * @param parameters
+     */
+    void setDefaultEventParameters(JSONObject parameters);
 }

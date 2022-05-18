@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.tealium.example.helper.DataLayer;
 import com.tealium.example.helper.TealiumHelper;
 import com.tealium.remotecommands.firebase.FirebaseConstants;
 
@@ -20,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     Button mLaunchGamingButton;
     Button mLaunchTravelButton;
     Button mResetUserDataButton;
+    Button mSearchButton;
+    EditText mSearchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,21 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, Object> data = new HashMap<>();
                 data.put(FirebaseConstants.Keys.COMMAND_NAME, FirebaseConstants.Commands.RESET_DATA);
                 TealiumHelper.trackEvent("reset_data", data);
+            }
+        });
+
+        mSearchText = findViewById(R.id.edit_text_search_term);
+        mSearchButton = findViewById(R.id.btn_search);
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String term = mSearchText.getText().toString();
+                if (!term.isEmpty()) {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put(FirebaseConstants.Keys.COMMAND_NAME, FirebaseConstants.Commands.SET_DEFAULT_PARAMETERS);
+                    data.put(DataLayer.SEARCH_KEYWORD, term);
+                    TealiumHelper.trackEvent("search", data);
+                }
             }
         });
 

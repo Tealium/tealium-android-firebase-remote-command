@@ -1,42 +1,38 @@
 package com.tealium.remotecommands.firebase;
 
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(AndroidJUnit4.class)
-public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
+public class FirebaseRemoteCommandTests {
 
+    private final Context mContext;
 
     public FirebaseRemoteCommandTests() {
-        super(QAActivity.class);
+        mContext = ApplicationProvider.getApplicationContext();
     }
 
     public MockFirebaseRemoteCommand newMockFirebaseRemoteCommand() {
-        return new MockFirebaseRemoteCommand(QAActivity.getActivity().getApplication());
+        return new MockFirebaseRemoteCommand((Application) mContext);
     }
 
     public MockFirebaseInstance newMockFirebaseWrapper() {
-        return new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext());
+        return new MockFirebaseInstance(mContext);
     }
-
-    @Rule
-    public ActivityTestRule<QAActivity> QAActivity = new ActivityTestRule<>(com.tealium.remotecommands.firebase.QAActivity.class);
 
     @Test
     public void testConfigureWithValidParams() {
@@ -44,7 +40,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplication()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
                 super.configure(timeout, minSeconds, analyticsEnabled);
@@ -69,12 +65,11 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.CONFIGURE);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplication()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
-            public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
-                super.configure(timeout, minSeconds, analyticsEnabled);
+            public void configure(Integer timeout, Boolean analyticsEnabled) {
+                super.configure(timeout, analyticsEnabled);
                 Assert.assertTrue("Unexpected timeout value", timeout <= 0);
-                Assert.assertTrue("Unexpected minSeconds value", minSeconds <= 0);
                 Assert.assertTrue("Unexpected analyticsEnabled value", analyticsEnabled);
             }
         };
@@ -94,7 +89,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -120,7 +115,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -146,7 +141,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -172,7 +167,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -198,7 +193,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -242,7 +237,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -286,7 +281,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -322,7 +317,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.LOG_EVENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void logEvent(String eventName, JSONObject eventParams) {
                 super.logEvent(eventName, eventParams);
@@ -358,7 +353,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -384,7 +379,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_SCREEN_NAME);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setScreenName(Activity activity, String screenName, String screenClass) {
                 super.setScreenName(activity, screenName, screenClass);
@@ -410,7 +405,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -436,7 +431,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_PROPERTY);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setUserProperty(String propertyName, String propertyValue) {
                 super.setUserProperty(propertyName, propertyValue);
@@ -462,7 +457,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -487,7 +482,7 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
         expectedMethods.add(TestData.Methods.SET_USER_ID);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
-        MockFirebaseInstance mockInstance = new MockFirebaseInstance(QAActivity.getActivity().getApplicationContext()) {
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
             @Override
             public void setUserId(String userId) {
                 super.setUserId(userId);
@@ -518,6 +513,24 @@ public class FirebaseRemoteCommandTests extends ActivityTestRule<QAActivity> {
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getResetData());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testSetDefaultParameters() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.SET_DEFAULT_PARAMETERS);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = newMockFirebaseWrapper();
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getDefaultParameters());
             TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");

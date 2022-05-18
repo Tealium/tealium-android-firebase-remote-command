@@ -11,17 +11,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserActivity"></activity>
-        <activity android:name=".EcommerceActivity"></activity>
-        <activity android:name=".GamingActivity"></activity>
-        <activity android:name=".TravelActivity"></activity>
+        <activity android:name=".UserActivity" android:exported="false"></activity>
+        <activity android:name=".EcommerceActivity" android:exported="false"></activity>
+        <activity android:name=".GamingActivity" android:exported="false"></activity>
+        <activity android:name=".TravelActivity" android:exported="false"></activity>
     </application>
 
 </manifest>

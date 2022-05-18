@@ -2,16 +2,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 32
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName tealium_firebase_version
+        targetSdkVersion 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        buildConfigField 'String', 'TEALIUM_FIREBASE_VERSION', "\"$tealium_firebase_version\""
     }
 
     buildTypes {
@@ -37,35 +36,37 @@ android {
 
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId 'com.tealium.remotecommands'
-            artifactId 'firebase'
-            version tealium_firebase_version
-            artifact("$buildDir/outputs/aar/firebase-release.aar")
+afterEvaluate {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.release
+                groupId 'com.tealium.remotecommands'
+                artifactId 'firebase'
+                version tealium_firebase_version
+            }
         }
-    }
-//    repositories {
-//        maven {
-//            url "s3://maven.tealiumiq.com/android/releases/"
-//            credentials(AwsCredentials) {
-//                accessKey AWS_ACCESS_KEY
-//                secretKey AWS_SECRET_KEY
+//        repositories {
+//            maven {
+//                url "s3://maven.tealiumiq.com/android/releases/"
+//                credentials(AwsCredentials) {
+//                    accessKey AWS_ACCESS_KEY
+//                    secretKey AWS_SECRET_KEY
+//                    sessionToken AWS_SESSION_TOKEN
+//                }
 //            }
 //        }
-//    }
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.tealium:remotecommands:1.0.0'
-    implementation 'com.google.firebase:firebase-analytics:17.6.0'
-    implementation 'com.google.firebase:firebase-iid:20.3.0'
+    api 'com.tealium:remotecommands:1.0.1'
+    implementation 'com.google.firebase:firebase-analytics:[17,22)'
+    implementation 'com.google.firebase:firebase-iid:[20,22)'
 
-    implementation 'com.android.support:appcompat-v7:29.0.0'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation 'androidx.test:core:1.3.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'junit:junit:4.12'
 }
