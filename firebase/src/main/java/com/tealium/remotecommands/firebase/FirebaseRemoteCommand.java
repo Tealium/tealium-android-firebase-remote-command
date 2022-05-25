@@ -47,7 +47,8 @@ public class FirebaseRemoteCommand extends RemoteCommand {
      */
     public FirebaseRemoteCommand(Application application, String commandId, String description) {
         super(commandId != null ? commandId : DEFAULT_COMMAND_ID,
-                description != null ? description : DEFAULT_COMMAND_DESCRIPTION);
+                description != null ? description : DEFAULT_COMMAND_DESCRIPTION,
+                BuildConfig.TEALIUM_FIREBASE_VERSION);
 
         Application.ActivityLifecycleCallbacks cb = createActivityLifecycleCallbacks();
         application.registerActivityLifecycleCallbacks(cb);
@@ -81,19 +82,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
                                 payload.optInt(FirebaseConstants.Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
-                                payload.optInt(FirebaseConstants.Keys.MIN_SECONDS, sErrorTime) * 1000,
                                 payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
                         break;
                     case FirebaseConstants.Commands.LOG_EVENT:
                         String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
-                        JSONObject params = payload.optJSONObject(FirebaseConstants.Keys.EVENT_PARAMS);
+                        JSONObject params = getParams(payload, FirebaseConstants.Keys.EVENT_PARAMS, FirebaseConstants.Keys.TAG_EVENT_PARAMS);
                         JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
-                        if (params == null) {
-                            params = payload.optJSONObject(FirebaseConstants.Keys.TAG_EVENT_PARAMS);
-                            if (params == null) {
-                                params = new JSONObject();
-                            }
-                        }
                         if (items != null) {
                             params.put("param_items", itemsParamsToJsonArray(items));
                         }
@@ -116,11 +110,26 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.RESET_DATA:
                         mFirebaseCommand.resetData();
                         break;
+                    case FirebaseConstants.Commands.SET_DEFAULT_PARAMETERS:
+                        JSONObject defaultParams = getParams(payload, FirebaseConstants.Keys.DEFAULT_PARAMS, FirebaseConstants.Keys.TAG_DEFAULT_PARAMS);
+                        mFirebaseCommand.setDefaultEventParameters(defaultParams);
+                        break;
                 }
             } catch (Exception ex) {
                 Log.w(FirebaseConstants.TAG, "Error processing command: " + command, ex);
             }
         }
+    }
+
+    private static JSONObject getParams(JSONObject payload, String key, String fallbackKey) {
+        JSONObject params = payload.optJSONObject(key);
+        if (params == null) {
+            params = payload.optJSONObject(fallbackKey);
+            if (params == null) {
+                params = new JSONObject();
+            }
+        }
+        return params;
     }
 
     // Setup lifecycle callbacks to init FirebaseAnalytics. You may prefer to do this manually.

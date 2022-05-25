@@ -18,13 +18,14 @@ import java.util.Map;
 
 class FirebaseInstance implements FirebaseCommand {
 
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private final FirebaseAnalytics mFirebaseAnalytics;
 
-    private static Map<String, String> eventsMap;
-    private static Map<String, String> params;
+    private static final Map<String, String> eventsMap;
+    private static final Map<String, String> params;
 
     static {
         eventsMap = new HashMap<>();
+        eventsMap.put("event_ad_impression", FirebaseAnalytics.Event.AD_IMPRESSION);
         eventsMap.put("event_add_payment_info", FirebaseAnalytics.Event.ADD_PAYMENT_INFO);
         eventsMap.put("event_add_shipping_info", FirebaseAnalytics.Event.ADD_SHIPPING_INFO);
         eventsMap.put("event_add_to_cart", FirebaseAnalytics.Event.ADD_TO_CART);
@@ -43,6 +44,7 @@ class FirebaseInstance implements FirebaseCommand {
         eventsMap.put("event_purchase", FirebaseAnalytics.Event.PURCHASE);
         eventsMap.put("event_refund", FirebaseAnalytics.Event.REFUND);
         eventsMap.put("event_remove_cart", FirebaseAnalytics.Event.REMOVE_FROM_CART);
+        eventsMap.put("event_screen_view", FirebaseAnalytics.Event.SCREEN_VIEW);
         eventsMap.put("event_search", FirebaseAnalytics.Event.SEARCH);
         eventsMap.put("event_select_content", FirebaseAnalytics.Event.SELECT_CONTENT);
         eventsMap.put("event_select_item", FirebaseAnalytics.Event.SELECT_ITEM);
@@ -62,6 +64,10 @@ class FirebaseInstance implements FirebaseCommand {
         params = new HashMap<>();
         params.put("param_achievement_id", FirebaseAnalytics.Param.ACHIEVEMENT_ID);
         params.put("param_ad_network_click_id", FirebaseAnalytics.Param.ACLID);
+        params.put("param_ad_format", FirebaseAnalytics.Param.AD_FORMAT);
+        params.put("param_ad_platform", FirebaseAnalytics.Param.AD_PLATFORM);
+        params.put("param_ad_source", FirebaseAnalytics.Param.AD_SOURCE);
+        params.put("param_ad_unit_name", FirebaseAnalytics.Param.AD_UNIT_NAME);
         params.put("param_affiliation", FirebaseAnalytics.Param.AFFILIATION);
         params.put("param_cp1", FirebaseAnalytics.Param.CP1);
         params.put("param_campaign", FirebaseAnalytics.Param.CAMPAIGN);
@@ -82,6 +88,10 @@ class FirebaseInstance implements FirebaseCommand {
         params.put("param_items", FirebaseAnalytics.Param.ITEMS);
         params.put("param_item_brand", FirebaseAnalytics.Param.ITEM_BRAND);
         params.put("param_item_category", FirebaseAnalytics.Param.ITEM_CATEGORY);
+        params.put("param_item_category2", FirebaseAnalytics.Param.ITEM_CATEGORY2);
+        params.put("param_item_category3", FirebaseAnalytics.Param.ITEM_CATEGORY3);
+        params.put("param_item_category4", FirebaseAnalytics.Param.ITEM_CATEGORY4);
+        params.put("param_item_category5", FirebaseAnalytics.Param.ITEM_CATEGORY5);
         params.put("param_item_id", FirebaseAnalytics.Param.ITEM_ID);
         params.put("param_item_list_id", FirebaseAnalytics.Param.ITEM_LIST_ID);
         params.put("param_item_list_name", FirebaseAnalytics.Param.ITEM_LIST_NAME);
@@ -103,6 +113,8 @@ class FirebaseInstance implements FirebaseCommand {
         params.put("param_promotion_name", FirebaseAnalytics.Param.PROMOTION_NAME);
         params.put("param_quantity", FirebaseAnalytics.Param.QUANTITY);
         params.put("param_score", FirebaseAnalytics.Param.SCORE);
+        params.put("param_screen_class", FirebaseAnalytics.Param.SCREEN_CLASS);
+        params.put("param_screen_name", FirebaseAnalytics.Param.SCREEN_NAME);
         params.put("param_search_term", FirebaseAnalytics.Param.SEARCH_TERM);
         params.put("param_shipping", FirebaseAnalytics.Param.SHIPPING);
         params.put("param_shipping_tier", FirebaseAnalytics.Param.SHIPPING_TIER);
@@ -123,12 +135,13 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
+        configure(timeout, analyticsEnabled);
+    }
+
+    @Override
+    public void configure(Integer timeout, Boolean analyticsEnabled) {
         if (timeout > 0) {
             mFirebaseAnalytics.setSessionTimeoutDuration(timeout);
-        }
-
-        if (minSeconds > 0) {
-            mFirebaseAnalytics.setMinimumSessionDuration(minSeconds.longValue());
         }
 
         if (analyticsEnabled != null) {
@@ -171,6 +184,18 @@ class FirebaseInstance implements FirebaseCommand {
         }
     }
 
+    public void setDefaultEventParameters(JSONObject eventParameters) {
+        Bundle bundle;
+        try {
+            bundle = jsonToBundle(eventParameters);
+        } catch (Exception ignored) {
+            bundle = null;
+        }
+        if (bundle != null) {
+            mFirebaseAnalytics.setDefaultEventParameters(bundle);
+        }
+    }
+
     @Override
     public void resetData() {
         mFirebaseAnalytics.resetAnalyticsData();
@@ -179,7 +204,7 @@ class FirebaseInstance implements FirebaseCommand {
 
     static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
         Bundle bundle = new Bundle();
-        Iterator iter = jsonObject.keys();
+        Iterator<String> iter = jsonObject.keys();
         while (iter.hasNext()) {
             String key = (String) iter.next();
             String firebaseKey = mapParams(key);
@@ -226,7 +251,6 @@ class FirebaseInstance implements FirebaseCommand {
     }
 
     private static String mapEventNames(String eventName) {
-
         String name = eventsMap.get(eventName);
         if (name == null) {
             return eventName;

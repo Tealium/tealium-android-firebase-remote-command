@@ -18,17 +18,17 @@ public class MockFirebaseInstance extends FirebaseInstance {
 
     private void addCallerName() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        for (int i = 0; i < stackTraceElements.length; i++) {
-            if (stackTraceElements[i].getClassName().contains("com.tealium") && !stackTraceElements[i].getMethodName().contains("addCallerName")) {
-                methodsCalled.add(stackTraceElements[i].getMethodName());
+        for (StackTraceElement stackTraceElement : stackTraceElements) {
+            if (stackTraceElement.getClassName().contains("com.tealium") && !stackTraceElement.getMethodName().contains("addCallerName")) {
+                methodsCalled.add(stackTraceElement.getMethodName());
                 break;
             }
         }
     }
 
     @Override
-    public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
-        super.configure(timeout, minSeconds, analyticsEnabled);
+    public void configure(Integer timeout, Boolean analyticsEnabled) {
+        super.configure(timeout, analyticsEnabled);
         addCallerName();
     }
 
@@ -59,6 +59,12 @@ public class MockFirebaseInstance extends FirebaseInstance {
     @Override
     public void resetData() {
         super.resetData();
+        addCallerName();
+    }
+
+    @Override
+    public void setDefaultEventParameters(JSONObject parameters) {
+        super.setDefaultEventParameters(parameters);
         addCallerName();
     }
 }

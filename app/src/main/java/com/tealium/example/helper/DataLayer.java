@@ -42,4 +42,6 @@ public class DataLayer {
     public static final String TRAVEL_CLASS = "travel_class";
     public static final String NUMBER_OF_ROOMS = "number_of_rooms";
     public static final String NUMBER_OF_PASSENGERS = "number_of_passengers";
+
+    public static final String SEARCH_KEYWORD = "search_keyword";
 }

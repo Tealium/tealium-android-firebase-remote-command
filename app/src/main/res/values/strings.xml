@@ -44,4 +44,6 @@
 
     <!-- Text View -->
     <string name="txt_events_title">Events</string>
+    <string name="search">Search</string>
+    <string name="search_term">Search Term</string>
 </resources>
