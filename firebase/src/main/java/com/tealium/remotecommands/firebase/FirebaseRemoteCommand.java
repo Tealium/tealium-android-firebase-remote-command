@@ -3,6 +3,7 @@ package com.tealium.remotecommands.firebase;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+
+import javax.annotation.Nullable;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
@@ -114,6 +117,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         JSONObject defaultParams = getParams(payload, FirebaseConstants.Keys.DEFAULT_PARAMS, FirebaseConstants.Keys.TAG_DEFAULT_PARAMS);
                         mFirebaseCommand.setDefaultEventParameters(defaultParams);
                         break;
+                    case FirebaseConstants.Commands.SET_CONSENT:
+                        JSONObject consentParams = getParams(payload, FirebaseConstants.Keys.CONSENT_SETTINGS, null);
+                        Log.d(FirebaseConstants.TAG, "ConsentParams" + consentParams.toString());
+                        Log.d(FirebaseConstants.TAG, "Firebase" + mFirebaseCommand.toString());
+                        mFirebaseCommand.setConsent(consentParams);
+                        break;
                 }
             } catch (Exception ex) {
                 Log.w(FirebaseConstants.TAG, "Error processing command: " + command, ex);
@@ -121,10 +130,12 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         }
     }
 
-    private static JSONObject getParams(JSONObject payload, String key, String fallbackKey) {
+    private static JSONObject getParams(JSONObject payload, String key, @Nullable String fallbackKey) {
         JSONObject params = payload.optJSONObject(key);
         if (params == null) {
-            params = payload.optJSONObject(fallbackKey);
+            if (fallbackKey != null) {
+                params = payload.optJSONObject(fallbackKey);
+            }
             if (params == null) {
                 params = new JSONObject();
             }

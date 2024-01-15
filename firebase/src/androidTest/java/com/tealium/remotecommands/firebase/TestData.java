@@ -208,6 +208,49 @@ public class TestData {
             return create(json);
         }
 
+        public static RemoteCommand.Response getValidConsentSettings() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.SET_CONSENT);
+                JSONObject consentJson = new JSONObject();
+                consentJson.put("ad_storage", "granted");
+                consentJson.put("ad_user_data", "denied");
+                consentJson.put("ad_personalization", "denied");
+                consentJson.put("analytics_storage", "granted");
+                json.put(Keys.CONSENT_SETTINGS, consentJson);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getValidConsentSettings: ", jex);
+            }
+            return create(json);
+        }
+
+        public static RemoteCommand.Response getMissingConsentSettings() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.SET_CONSENT);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getMissingConsentSettings: ", jex);
+            }
+            return create(json);
+        }
+
+        public static RemoteCommand.Response getInvalidConsentSettings() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Keys.COMMAND_NAME, Commands.SET_CONSENT);
+                JSONObject consentJson = new JSONObject();
+                consentJson.put("ad_storage", "granted");
+                consentJson.put("ad_user_data", "denied");
+                consentJson.put("ad_personalization", "denied");
+                consentJson.put("analytics_storage", "granted");
+                consentJson.put("invalid_key", "invalid_value");
+                json.put(Keys.CONSENT_SETTINGS, consentJson);
+            } catch (JSONException jex) {
+                Log.w(TEST_TAG + "-Test", "getInvalidConsentSettings: ", jex);
+            }
+            return create(json);
+        }
+
         public static RemoteCommand.Response getInvalidUserProperty() {
             JSONObject json = new JSONObject();
             try {
@@ -376,6 +419,7 @@ public class TestData {
         public static final String SET_SCREEN_NAME = "setScreenName";
         public static final String RESET_DATA = "resetData";
         public static final String SET_DEFAULT_PARAMETERS = "setDefaultEventParameters";
+        public static final String SET_CONSENT = "setConsent";
     }
 
 }

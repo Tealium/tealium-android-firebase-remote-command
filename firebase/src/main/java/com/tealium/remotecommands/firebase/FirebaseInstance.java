@@ -196,6 +196,24 @@ class FirebaseInstance implements FirebaseCommand {
         }
     }
 
+    public void setConsent(JSONObject consentParameters) {
+        Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> consentSettings = new HashMap<>();
+        Iterator<String> keys = consentParameters.keys();
+        while (keys.hasNext()) {
+            try {
+                String key = keys.next();
+                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(key);
+                FirebaseAnalytics.ConsentType consentType = mapConsentType(consentParameters.getString(key));
+                if (consentStatus != null && consentType != null) {
+                    consentSettings.put(consentType, consentStatus);
+                }
+            } catch (Exception ignored) {
+                // Value was not a string, malformed Consent Parameters
+            }
+        }
+        mFirebaseAnalytics.setConsent(consentSettings);
+    }
+
     @Override
     public void resetData() {
         mFirebaseAnalytics.resetAnalyticsData();
@@ -264,5 +282,31 @@ class FirebaseInstance implements FirebaseCommand {
             return param;
         }
         return paramName;
+    }
+
+    private static FirebaseAnalytics.ConsentStatus mapConsentStatus(String param) {
+        switch (param) {
+            case "granted":
+                return FirebaseAnalytics.ConsentStatus.GRANTED;
+            case "denied":
+                return FirebaseAnalytics.ConsentStatus.DENIED;
+            default:
+                return null;
+        }
+    }
+
+    private static FirebaseAnalytics.ConsentType mapConsentType(String param) {
+        switch (param) {
+            case "ad_storage":
+                return FirebaseAnalytics.ConsentType.AD_STORAGE;
+            case "ad_personalization":
+                return FirebaseAnalytics.ConsentType.AD_PERSONALIZATION;
+            case "ad_user_data":
+                return FirebaseAnalytics.ConsentType.AD_USER_DATA;
+            case "analytics_storage":
+                return FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE;
+            default:
+                return null;
+        }
     }
 }

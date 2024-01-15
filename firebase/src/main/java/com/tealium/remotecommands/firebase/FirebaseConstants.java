@@ -16,6 +16,7 @@ public final class FirebaseConstants {
         public static final String SET_USER_PROPERTY = "setuserproperty";
         public static final String RESET_DATA = "resetdata";
         public static final String SET_DEFAULT_PARAMETERS = "setdefaultparameters";
+        public static final String SET_CONSENT = "setconsent";
     }
 
     public static final class Keys {
@@ -39,6 +40,7 @@ public final class FirebaseConstants {
         public static final String USER_PROPERTY_NAME = "firebase_property_name";
         public static final String USER_PROPERTY_VALUE = "firebase_property_value";
         public static final String USER_ID = "firebase_user_id";
+        public static final String CONSENT_SETTINGS = "firebase_consent_settings";
     }
 
     public static final class ItemProperties {
