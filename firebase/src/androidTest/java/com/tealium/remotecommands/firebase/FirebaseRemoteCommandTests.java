@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseRemoteCommandTests {
 
@@ -462,10 +463,11 @@ public class FirebaseRemoteCommandTests {
             public void setConsent(JSONObject params) {
                 try {
                     super.setConsent(params);
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_storage"), "granted");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_personalization"), "denied");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_user_data"), "denied");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("analytics_storage"), "granted");
+                    Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> map = jsonToConsentMap(params);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_PERSONALIZATION), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.AD_USER_DATA), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
                 } catch (Exception e) {
                     Assert.fail("No exceptions should be thrown.");
                 }
@@ -524,10 +526,11 @@ public class FirebaseRemoteCommandTests {
             public void setConsent(JSONObject params) {
                 try {
                     super.setConsent(params);
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_storage"), "granted");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_personalization"), "denied");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("ad_user_data"), "denied");
-                    Assert.assertEquals("Unexpected consentType value", params.getString("analytics_storage"), "granted");
+                    Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> map = jsonToConsentMap(params);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_PERSONALIZATION), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.AD_USER_DATA), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
                     Assert.assertEquals("Unexpected consentType value", params.getString("invalid_key"), "invalid_value");
                 } catch (Exception e) {
                     Assert.fail("No exceptions should be thrown." + e);

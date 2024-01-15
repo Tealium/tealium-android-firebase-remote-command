@@ -197,21 +197,7 @@ class FirebaseInstance implements FirebaseCommand {
     }
 
     public void setConsent(JSONObject consentParameters) {
-        Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> consentSettings = new HashMap<>();
-        Iterator<String> keys = consentParameters.keys();
-        while (keys.hasNext()) {
-            try {
-                String key = keys.next();
-                FirebaseAnalytics.ConsentType consentType = mapConsentType(key);
-                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(consentParameters.getString(key));
-                if (consentStatus != null && consentType != null) {
-                    consentSettings.put(consentType, consentStatus);
-                }
-            } catch (Exception ignored) {
-                // Value was not a string, malformed Consent Parameters
-            }
-        }
-        mFirebaseAnalytics.setConsent(consentSettings);
+        mFirebaseAnalytics.setConsent(jsonToConsentMap(consentParameters));
     }
 
     @Override
@@ -219,6 +205,23 @@ class FirebaseInstance implements FirebaseCommand {
         mFirebaseAnalytics.resetAnalyticsData();
     }
 
+    static Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> jsonToConsentMap(JSONObject jsonObject) {
+        Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> consentSettings = new HashMap<>();
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            try {
+                String key = keys.next();
+                FirebaseAnalytics.ConsentType consentType = mapConsentType(key);
+                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(jsonObject.getString(key));
+                if (consentStatus != null && consentType != null) {
+                    consentSettings.put(consentType, consentStatus);
+                }
+            } catch (Exception ignored) {
+                // Value was not a string, malformed Consent Parameters. Ignore this parameter.
+            }
+        }
+        return consentSettings;
+    }
 
     static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
         Bundle bundle = new Bundle();
