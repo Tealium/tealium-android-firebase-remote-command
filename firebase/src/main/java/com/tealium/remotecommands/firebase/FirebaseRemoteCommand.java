@@ -119,8 +119,6 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         break;
                     case FirebaseConstants.Commands.SET_CONSENT:
                         JSONObject consentParams = getParams(payload, FirebaseConstants.Keys.CONSENT_SETTINGS, null);
-                        Log.d(FirebaseConstants.TAG, "ConsentParams" + consentParams.toString());
-                        Log.d(FirebaseConstants.TAG, "Firebase" + mFirebaseCommand.toString());
                         mFirebaseCommand.setConsent(consentParams);
                         break;
                 }

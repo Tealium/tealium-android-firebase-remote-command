@@ -202,8 +202,8 @@ class FirebaseInstance implements FirebaseCommand {
         while (keys.hasNext()) {
             try {
                 String key = keys.next();
-                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(key);
-                FirebaseAnalytics.ConsentType consentType = mapConsentType(consentParameters.getString(key));
+                FirebaseAnalytics.ConsentType consentType = mapConsentType(key);
+                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(consentParameters.getString(key));
                 if (consentStatus != null && consentType != null) {
                     consentSettings.put(consentType, consentStatus);
                 }
