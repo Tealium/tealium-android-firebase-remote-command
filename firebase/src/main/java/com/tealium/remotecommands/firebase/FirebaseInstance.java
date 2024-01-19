@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 class FirebaseInstance implements FirebaseCommand {
@@ -184,6 +185,7 @@ class FirebaseInstance implements FirebaseCommand {
         }
     }
 
+    @Override
     public void setDefaultEventParameters(JSONObject eventParameters) {
         Bundle bundle;
         try {
@@ -196,6 +198,7 @@ class FirebaseInstance implements FirebaseCommand {
         }
     }
 
+    @Override
     public void setConsent(JSONObject consentParameters) {
         mFirebaseAnalytics.setConsent(jsonToConsentMap(consentParameters));
     }
@@ -294,7 +297,11 @@ class FirebaseInstance implements FirebaseCommand {
             case "denied":
                 return FirebaseAnalytics.ConsentStatus.DENIED;
             default:
-                return null;
+                try {
+                    return FirebaseAnalytics.ConsentStatus.valueOf(param.toUpperCase(Locale.ROOT));
+                } catch (IllegalArgumentException ignored) {
+                    return null;
+                }
         }
     }
 
@@ -309,7 +316,11 @@ class FirebaseInstance implements FirebaseCommand {
             case "analytics_storage":
                 return FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE;
             default:
-                return null;
+                try {
+                    return FirebaseAnalytics.ConsentType.valueOf(param.toUpperCase(Locale.ROOT));
+                } catch (IllegalArgumentException ignored) {
+                    return null;
+                }
         }
     }
 }

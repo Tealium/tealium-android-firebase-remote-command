@@ -3,7 +3,6 @@ package com.tealium.remotecommands.firebase;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-
-import javax.annotation.Nullable;
 
 public class FirebaseRemoteCommand extends RemoteCommand {
 
@@ -118,7 +115,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         mFirebaseCommand.setDefaultEventParameters(defaultParams);
                         break;
                     case FirebaseConstants.Commands.SET_CONSENT:
-                        JSONObject consentParams = getParams(payload, FirebaseConstants.Keys.CONSENT_SETTINGS, null);
+                        JSONObject consentParams = payload.getJSONObject(FirebaseConstants.Keys.CONSENT_SETTINGS);
                         mFirebaseCommand.setConsent(consentParams);
                         break;
                 }
@@ -128,12 +125,10 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         }
     }
 
-    private static JSONObject getParams(JSONObject payload, String key, @Nullable String fallbackKey) {
+    private static JSONObject getParams(JSONObject payload, String key, String fallbackKey) {
         JSONObject params = payload.optJSONObject(key);
         if (params == null) {
-            if (fallbackKey != null) {
-                params = payload.optJSONObject(fallbackKey);
-            }
+            params = payload.optJSONObject(fallbackKey);
             if (params == null) {
                 params = new JSONObject();
             }
