@@ -291,36 +291,18 @@ class FirebaseInstance implements FirebaseCommand {
     }
 
     private static FirebaseAnalytics.ConsentStatus mapConsentStatus(String param) {
-        switch (param) {
-            case "granted":
-                return FirebaseAnalytics.ConsentStatus.GRANTED;
-            case "denied":
-                return FirebaseAnalytics.ConsentStatus.DENIED;
-            default:
-                try {
-                    return FirebaseAnalytics.ConsentStatus.valueOf(param.toUpperCase(Locale.ROOT));
-                } catch (IllegalArgumentException ignored) {
-                    return null;
-                }
+        try {
+            return FirebaseAnalytics.ConsentStatus.valueOf(param.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return null;
         }
     }
 
     private static FirebaseAnalytics.ConsentType mapConsentType(String param) {
-        switch (param) {
-            case "ad_storage":
-                return FirebaseAnalytics.ConsentType.AD_STORAGE;
-            case "ad_personalization":
-                return FirebaseAnalytics.ConsentType.AD_PERSONALIZATION;
-            case "ad_user_data":
-                return FirebaseAnalytics.ConsentType.AD_USER_DATA;
-            case "analytics_storage":
-                return FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE;
-            default:
-                try {
-                    return FirebaseAnalytics.ConsentType.valueOf(param.toUpperCase(Locale.ROOT));
-                } catch (IllegalArgumentException ignored) {
-                    return null;
-                }
+        try {
+            return FirebaseAnalytics.ConsentType.valueOf(param.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return null;
         }
     }
 }

@@ -487,7 +487,6 @@ public class FirebaseRemoteCommandTests {
     @Test
     public void testSetConsentWithMissingParams() {
         List<String> expectedMethods = new ArrayList<>();
-        expectedMethods.add(TestData.Methods.SET_CONSENT);
 
         MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
         MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
