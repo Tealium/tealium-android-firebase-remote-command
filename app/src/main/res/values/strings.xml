@@ -46,4 +46,11 @@
     <string name="txt_events_title">Events</string>
     <string name="search">Search</string>
     <string name="search_term">Search Term</string>
+    <!-- Consent -->
+    <string name="consent">Consent</string>
+    <string name="analytics_storage">Analytics Storage</string>
+    <string name="ad_storage">Ad Storage</string>
+    <string name="ad_personalization">Ad Personalization</string>
+    <string name="ad_user_data">Ad User Data</string>
+    <string name="set_consent">Set Consent</string>
 </resources>

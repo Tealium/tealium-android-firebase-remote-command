@@ -22,6 +22,7 @@
         <activity android:name=".EcommerceActivity" android:exported="false"></activity>
         <activity android:name=".GamingActivity" android:exported="false"></activity>
         <activity android:name=".TravelActivity" android:exported="false"></activity>
+        <activity android:name=".ConsentActivity" android:exported="false"></activity>
     </application>
 
 </manifest>

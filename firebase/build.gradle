@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -62,7 +62,7 @@ afterEvaluate {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api 'com.tealium:remotecommands:1.0.1'
-    implementation 'com.google.firebase:firebase-analytics:[17,22)'
+    implementation 'com.google.firebase:firebase-analytics:[18,22)'
     implementation 'com.google.firebase:firebase-iid:[20,22)'
 
     androidTestImplementation 'androidx.test:runner:1.4.0'

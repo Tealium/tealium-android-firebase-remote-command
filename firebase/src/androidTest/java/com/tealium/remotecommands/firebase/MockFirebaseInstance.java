@@ -67,4 +67,10 @@ public class MockFirebaseInstance extends FirebaseInstance {
         super.setDefaultEventParameters(parameters);
         addCallerName();
     }
+
+    @Override
+    public void setConsent(JSONObject parameters) {
+        super.setConsent(parameters);
+        addCallerName();
+    }
 }

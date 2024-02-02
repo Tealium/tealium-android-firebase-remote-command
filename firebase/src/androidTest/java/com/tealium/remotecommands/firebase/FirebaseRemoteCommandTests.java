@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseRemoteCommandTests {
 
@@ -445,6 +446,101 @@ public class FirebaseRemoteCommandTests {
 
         try {
             mockRemoteCommand.onInvoke(TestData.Responses.getInvalidUserProperty());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testSetConsentWithValidParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.SET_CONSENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
+            @Override
+            public void setConsent(JSONObject params) {
+                try {
+                    super.setConsent(params);
+                    Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> map = jsonToConsentMap(params);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_PERSONALIZATION), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.AD_USER_DATA), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                } catch (Exception e) {
+                    Assert.fail("No exceptions should be thrown.");
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getValidConsentSettings());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testSetConsentWithMissingParams() {
+        List<String> expectedMethods = new ArrayList<>();
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
+            @Override
+            public void setConsent(JSONObject params) {
+                try {
+                    super.setConsent(params);
+                    Assert.assertTrue("Unexpected consentType", params.isNull("ad_storage"));
+                    Assert.assertTrue("Unexpected consentType", params.isNull("ad_personalization"));
+                    Assert.assertTrue("Unexpected consentType", params.isNull("ad_user_data"));
+                    Assert.assertTrue("Unexpected consentType", params.isNull("analytics_storage"));
+                } catch (Exception e) {
+                    Assert.fail("No exceptions should be thrown." + e);
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getMissingConsentSettings());
+            TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
+        } catch (Exception e) {
+            Assert.fail("No exceptions should be thrown.");
+        }
+    }
+
+    @Test
+    public void testSetConsentWithInvalidParams() {
+        List<String> expectedMethods = new ArrayList<>();
+        expectedMethods.add(TestData.Methods.SET_CONSENT);
+
+        MockFirebaseRemoteCommand mockRemoteCommand = newMockFirebaseRemoteCommand();
+        MockFirebaseInstance mockInstance = new MockFirebaseInstance(mContext) {
+            @Override
+            public void setConsent(JSONObject params) {
+                try {
+                    super.setConsent(params);
+                    Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> map = jsonToConsentMap(params);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                    Assert.assertEquals("Unexpected consentType value", map.get(FirebaseAnalytics.ConsentType.AD_PERSONALIZATION), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.AD_USER_DATA), FirebaseAnalytics.ConsentStatus.DENIED);
+                    Assert.assertEquals("Unexpected consentType value",  map.get(FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE), FirebaseAnalytics.ConsentStatus.GRANTED);
+                    Assert.assertEquals("Unexpected consentType value", params.getString("invalid_key"), "invalid_value");
+                } catch (Exception e) {
+                    Assert.fail("No exceptions should be thrown." + e);
+                }
+            }
+        };
+
+        mockRemoteCommand.setCommand(mockInstance);
+
+        try {
+            mockRemoteCommand.onInvoke(TestData.Responses.getInvalidConsentSettings());
             TestUtils.assertContainsAllAndOnly(mockInstance.methodsCalled, expectedMethods);
         } catch (Exception e) {
             Assert.fail("No exceptions should be thrown.");

@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     Button mResetUserDataButton;
     Button mSearchButton;
     EditText mSearchText;
-
+    Button mConsentButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +86,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        mConsentButton = findViewById(R.id.btn_consent);
+        mConsentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ConsentActivity.class));
+            }
+        });
         TealiumHelper.trackScreen(this, "Home Page");
     }
 }

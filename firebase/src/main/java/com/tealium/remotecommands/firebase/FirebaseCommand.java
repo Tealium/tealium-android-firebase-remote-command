@@ -70,4 +70,11 @@ interface FirebaseCommand {
      * @param parameters
      */
     void setDefaultEventParameters(JSONObject parameters);
+
+    /**
+     * Sets the consent for Firebase.
+     *
+     * @param consentParameters the string representation of each ConsentType and it's ConsentStatus.
+     */
+    void setConsent(JSONObject consentParameters);
 }

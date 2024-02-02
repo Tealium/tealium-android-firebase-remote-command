@@ -114,6 +114,10 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         JSONObject defaultParams = getParams(payload, FirebaseConstants.Keys.DEFAULT_PARAMS, FirebaseConstants.Keys.TAG_DEFAULT_PARAMS);
                         mFirebaseCommand.setDefaultEventParameters(defaultParams);
                         break;
+                    case FirebaseConstants.Commands.SET_CONSENT:
+                        JSONObject consentParams = payload.getJSONObject(FirebaseConstants.Keys.CONSENT_SETTINGS);
+                        mFirebaseCommand.setConsent(consentParams);
+                        break;
                 }
             } catch (Exception ex) {
                 Log.w(FirebaseConstants.TAG, "Error processing command: " + command, ex);

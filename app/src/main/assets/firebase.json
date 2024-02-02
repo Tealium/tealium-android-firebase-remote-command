@@ -59,7 +59,11 @@
     "travel_destination": "event.param_destination",
     "travel_origin": "event.param_origin",
     "user_signup_method": "event.param_user_signup_method",
-    "username": "firebase_property_name, firebase_property_value"
+    "username": "firebase_property_name, firebase_property_value",
+    "consent_ad_storage": "firebase_consent_settings.ad_storage",
+    "consent_analytics_storage": "firebase_consent_settings.analytics_storage",
+    "consent_ad_user_data": "firebase_consent_settings.ad_user_data",
+    "consent_ad_personalization": "firebase_consent_settings.ad_personalization"
   },
   "commands": {
     "add_to_cart": "logevent",
@@ -84,6 +88,7 @@
     "unlock_achievement": "logevent",
     "view_item": "logevent",
     "view_item_list": "logevent",
-    "wishlist_add": "logevent"
+    "wishlist_add": "logevent",
+    "setconsent": "setconsent"
   }
 }
