@@ -180,7 +180,10 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void setUserProperty(String propertyName, String propertyValue) {
-        if (propertyName != null && propertyValue != null) {
+        if (propertyName != null) {
+            if (propertyValue != null && propertyValue.equals("")) {
+                propertyValue = null;
+            }
             mFirebaseAnalytics.setUserProperty(propertyName, propertyValue);
         }
     }

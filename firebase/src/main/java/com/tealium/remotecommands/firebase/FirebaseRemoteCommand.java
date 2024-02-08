@@ -18,7 +18,7 @@ import java.util.Iterator;
 public class FirebaseRemoteCommand extends RemoteCommand {
 
     FirebaseCommand mFirebaseCommand;
-    private static Activity mCurrentActivity;
+    private Activity mCurrentActivity;
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
     public static final String DEFAULT_COMMAND_DESCRIPTION = "Tealium Firebase Analytics integration";
@@ -99,9 +99,27 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         mFirebaseCommand.setScreenName(mCurrentActivity, screenName, screenClass);
                         break;
                     case FirebaseConstants.Commands.SET_USER_PROPERTY:
-                        String propertyName = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_NAME, null);
-                        String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
-                        mFirebaseCommand.setUserProperty(propertyName, propertyValue);
+                        JSONArray propertyNames;
+                        JSONArray propertyValues;
+                        // Try arrays first
+                        if ((propertyNames = payload.optJSONArray(FirebaseConstants.Keys.USER_PROPERTY_NAME)) != null
+                                && (propertyValues = payload.optJSONArray(FirebaseConstants.Keys.USER_PROPERTY_VALUE)) != null) {
+
+                            for (int i = 0; i < propertyNames.length(); i++) {
+                                try {
+                                    String name = propertyNames.optString(i, "");
+                                    String value = propertyValues.optString(i, "");
+
+                                    mFirebaseCommand.setUserProperty(name, value);
+                                } catch (IndexOutOfBoundsException ignore) {
+                                }
+                            }
+
+                        } else {
+                            String propertyName = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_NAME, null);
+                            String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
+                            mFirebaseCommand.setUserProperty(propertyName, propertyValue);
+                        }
                         break;
                     case FirebaseConstants.Commands.SET_USER_ID:
                         String userId = payload.optString(FirebaseConstants.Keys.USER_ID, null);
@@ -138,7 +156,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
     // Setup lifecycle callbacks to init FirebaseAnalytics. You may prefer to do this manually.
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private static Application.ActivityLifecycleCallbacks createActivityLifecycleCallbacks() {
+    private Application.ActivityLifecycleCallbacks createActivityLifecycleCallbacks() {
 
         return new Application.ActivityLifecycleCallbacks() {
             @Override
