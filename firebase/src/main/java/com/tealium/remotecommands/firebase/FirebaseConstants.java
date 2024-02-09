@@ -2,6 +2,9 @@ package com.tealium.remotecommands.firebase;
 
 public final class FirebaseConstants {
 
+    private FirebaseConstants() {
+    }
+
     public static final String TAG = "Tealium-Firebase";
     public static final String SEPARATOR = ",";
 

@@ -18,7 +18,7 @@ import java.util.Iterator;
 public class FirebaseRemoteCommand extends RemoteCommand {
 
     FirebaseCommand mFirebaseCommand;
-    private Activity mCurrentActivity;
+    Activity mCurrentActivity;
 
     public static final String DEFAULT_COMMAND_ID = "firebaseAnalytics";
     public static final String DEFAULT_COMMAND_DESCRIPTION = "Tealium Firebase Analytics integration";
@@ -85,7 +85,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                                 payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
                         break;
                     case FirebaseConstants.Commands.LOG_EVENT:
-                        String eventName = payload.optString(FirebaseConstants.Keys.EVENT_NAME, null);
+                        String eventName = payload.getString(FirebaseConstants.Keys.EVENT_NAME);
                         JSONObject params = getParams(payload, FirebaseConstants.Keys.EVENT_PARAMS, FirebaseConstants.Keys.TAG_EVENT_PARAMS);
                         JSONObject items = payload.optJSONObject(FirebaseConstants.Keys.ITEMS_PARAMS);
                         if (items != null) {
@@ -94,7 +94,7 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
                     case FirebaseConstants.Commands.SET_SCREEN_NAME:
-                        String screenName = payload.optString(FirebaseConstants.Keys.SCREEN_NAME, null);
+                        String screenName = payload.getString(FirebaseConstants.Keys.SCREEN_NAME);
                         String screenClass = payload.optString(FirebaseConstants.Keys.SCREEN_CLASS, null);
                         mFirebaseCommand.setScreenName(mCurrentActivity, screenName, screenClass);
                         break;
@@ -107,22 +107,22 @@ public class FirebaseRemoteCommand extends RemoteCommand {
 
                             for (int i = 0; i < propertyNames.length(); i++) {
                                 try {
-                                    String name = propertyNames.optString(i, "");
+                                    String name = propertyNames.getString(i);
                                     String value = propertyValues.optString(i, "");
 
                                     mFirebaseCommand.setUserProperty(name, value);
-                                } catch (IndexOutOfBoundsException ignore) {
+                                } catch (IndexOutOfBoundsException | JSONException ignore) {
                                 }
                             }
 
                         } else {
-                            String propertyName = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_NAME, null);
+                            String propertyName = payload.getString(FirebaseConstants.Keys.USER_PROPERTY_NAME);
                             String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
                             mFirebaseCommand.setUserProperty(propertyName, propertyValue);
                         }
                         break;
                     case FirebaseConstants.Commands.SET_USER_ID:
-                        String userId = payload.optString(FirebaseConstants.Keys.USER_ID, null);
+                        String userId = payload.getString(FirebaseConstants.Keys.USER_ID);
                         mFirebaseCommand.setUserId(userId);
                         break;
                     case FirebaseConstants.Commands.RESET_DATA:
@@ -130,7 +130,9 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         break;
                     case FirebaseConstants.Commands.SET_DEFAULT_PARAMETERS:
                         JSONObject defaultParams = getParams(payload, FirebaseConstants.Keys.DEFAULT_PARAMS, FirebaseConstants.Keys.TAG_DEFAULT_PARAMS);
-                        mFirebaseCommand.setDefaultEventParameters(defaultParams);
+                        if (defaultParams.length() > 0) {
+                            mFirebaseCommand.setDefaultEventParameters(defaultParams);
+                        }
                         break;
                     case FirebaseConstants.Commands.SET_CONSENT:
                         JSONObject consentParams = payload.getJSONObject(FirebaseConstants.Keys.CONSENT_SETTINGS);

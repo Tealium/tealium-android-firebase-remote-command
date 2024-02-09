@@ -141,7 +141,7 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void configure(Integer timeout, Boolean analyticsEnabled) {
-        if (timeout > 0) {
+        if (timeout != null && timeout > 0) {
             mFirebaseAnalytics.setSessionTimeoutDuration(timeout);
         }
 
@@ -152,16 +152,17 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void logEvent(String eventName, JSONObject eventParams) {
+        if (eventName == null) return;
+
         Bundle paramBundle;
         try {
             paramBundle = jsonToBundle(eventParams);
         } catch (JSONException | NullPointerException e) {
             paramBundle = null;
         }
-        if (eventName != null) {
-            String ev = mapEventNames(eventName);
-            mFirebaseAnalytics.logEvent(ev, paramBundle);
-        }
+
+        String ev = mapEventNames(eventName);
+        mFirebaseAnalytics.logEvent(ev, paramBundle);
     }
 
     @Override
@@ -190,6 +191,8 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void setDefaultEventParameters(JSONObject eventParameters) {
+        if (isNullOrEmpty(eventParameters)) return;
+
         Bundle bundle;
         try {
             bundle = jsonToBundle(eventParameters);
@@ -203,6 +206,8 @@ class FirebaseInstance implements FirebaseCommand {
 
     @Override
     public void setConsent(JSONObject consentParameters) {
+        if (isNullOrEmpty(consentParameters)) return;
+
         mFirebaseAnalytics.setConsent(jsonToConsentMap(consentParameters));
     }
 
@@ -307,5 +312,9 @@ class FirebaseInstance implements FirebaseCommand {
         } catch (IllegalArgumentException ignored) {
             return null;
         }
+    }
+
+    private static boolean isNullOrEmpty(JSONObject json) {
+        return json == null || json.length() <= 0;
     }
 }
