@@ -217,5 +217,43 @@ public class FirebaseInstanceTests {
         assertEquals(FirebaseAnalytics.ConsentStatus.DENIED, consent.get(FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE));
     }
 
+    @Test
+    public void mapEvent_MapsTealiumEvents_ToFirebaseEvents() {
+        for (Map.Entry<String, String> entry : FirebaseInstance.eventsMap.entrySet()) {
+            assertEquals(entry.getValue(), FirebaseInstance.mapEventNames(entry.getKey()));
+        }
+    }
 
+    @Test
+    public void mapEvent_MapsUnknownFirebaseEvents() {
+        // Tealium mapping is event_signup (no space)
+        assertEquals("sign_up", FirebaseInstance.mapEventNames("event_sign_up"));
+    }
+
+    @Test
+    public void mapParams_MapsTealiumParams_ToFirebaseParams() {
+        for (Map.Entry<String, String> entry : FirebaseInstance.params.entrySet()) {
+            assertEquals(entry.getValue(), FirebaseInstance.mapParams(entry.getKey()));
+        }
+    }
+
+    @Test
+    public void mapParams_MapsUnknownFirebaseParams() {
+        // base dependency is 18.+ but campaign Id is only present in a much later release
+        // successful test will therefore require a later dependency for this to pass.
+        assertEquals("campaign_id", FirebaseInstance.mapParams("param_campaign_id"));
+        assertEquals("creative_format", FirebaseInstance.mapParams("param_creative_format"));
+        assertEquals("marketing_tactic", FirebaseInstance.mapParams("param_marketing_tactic"));
+        assertEquals("source_platform", FirebaseInstance.mapParams("param_source_platform"));
+    }
+
+    @Test
+    public void mapEventNames_ReturnsValue_When_NotMatched() {
+        assertEquals("my_custom_event", FirebaseInstance.mapEventNames("my_custom_event"));
+    }
+
+    @Test
+    public void mapParams_ReturnsValue_When_NotMatched() {
+        assertEquals("my_custom_param", FirebaseInstance.mapParams("my_custom_param"));
+    }
 }
