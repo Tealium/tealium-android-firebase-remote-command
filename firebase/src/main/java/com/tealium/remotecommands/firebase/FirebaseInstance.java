@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -21,10 +22,204 @@ class FirebaseInstance implements FirebaseCommand {
 
     private final FirebaseAnalytics mFirebaseAnalytics;
 
-    private static final Map<String, String> eventsMap;
-    private static final Map<String, String> params;
+    public FirebaseInstance(Context applicationContext) {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
+    }
+
+    @Override
+    public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
+        configure(timeout, analyticsEnabled);
+    }
+
+    @Override
+    public void configure(Integer timeout, Boolean analyticsEnabled) {
+        if (timeout != null && timeout > 0) {
+            mFirebaseAnalytics.setSessionTimeoutDuration(timeout);
+        }
+
+        if (analyticsEnabled != null) {
+            mFirebaseAnalytics.setAnalyticsCollectionEnabled(analyticsEnabled);
+        }
+    }
+
+    @Override
+    public void logEvent(String eventName, JSONObject eventParams) {
+        if (eventName == null) return;
+
+        Bundle paramBundle;
+        try {
+            paramBundle = jsonToBundle(eventParams);
+        } catch (JSONException | NullPointerException e) {
+            paramBundle = null;
+        }
+
+        String ev = mapEventNames(eventName);
+        mFirebaseAnalytics.logEvent(ev, paramBundle);
+    }
+
+    @Override
+    public void setScreenName(Activity currentActivity, String screenName, String screenClass) {
+        if (screenName != null) {
+            mFirebaseAnalytics.setCurrentScreen(currentActivity, screenName, screenClass);
+        }
+    }
+
+    @Override
+    public void setUserId(String userId) {
+        if (userId != null) {
+            mFirebaseAnalytics.setUserId(userId);
+        }
+    }
+
+    @Override
+    public void setUserProperty(String propertyName, String propertyValue) {
+        if (propertyName != null) {
+            if (propertyValue != null && propertyValue.equals("")) {
+                propertyValue = null;
+            }
+            mFirebaseAnalytics.setUserProperty(propertyName, propertyValue);
+        }
+    }
+
+    @Override
+    public void setDefaultEventParameters(JSONObject eventParameters) {
+        if (isNullOrEmpty(eventParameters)) return;
+
+        Bundle bundle;
+        try {
+            bundle = jsonToBundle(eventParameters);
+        } catch (Exception ignored) {
+            bundle = null;
+        }
+        if (bundle != null) {
+            mFirebaseAnalytics.setDefaultEventParameters(bundle);
+        }
+    }
+
+    @Override
+    public void setConsent(JSONObject consentParameters) {
+        if (isNullOrEmpty(consentParameters)) return;
+
+        mFirebaseAnalytics.setConsent(jsonToConsentMap(consentParameters));
+    }
+
+    @Override
+    public void resetData() {
+        mFirebaseAnalytics.resetAnalyticsData();
+    }
+
+    static Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> jsonToConsentMap(JSONObject jsonObject) {
+        Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> consentSettings = new HashMap<>();
+        Iterator<String> keys = jsonObject.keys();
+        while (keys.hasNext()) {
+            try {
+                String key = keys.next();
+                FirebaseAnalytics.ConsentType consentType = mapConsentType(key);
+                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(jsonObject.getString(key));
+                if (consentStatus != null && consentType != null) {
+                    consentSettings.put(consentType, consentStatus);
+                }
+            } catch (Exception ignored) {
+                // Value was not a string, malformed Consent Parameters. Ignore this parameter.
+            }
+        }
+        return consentSettings;
+    }
+
+    static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
+        Bundle bundle = new Bundle();
+        Iterator<String> iter = jsonObject.keys();
+        while (iter.hasNext()) {
+            String key = (String) iter.next();
+            String firebaseKey = mapParams(key);
+            try {
+                switch (firebaseKey) {
+                    // Double
+                    case FirebaseAnalytics.Param.DISCOUNT:
+                    case FirebaseAnalytics.Param.PRICE:
+                    case FirebaseAnalytics.Param.SHIPPING:
+                    case FirebaseAnalytics.Param.TAX:
+                    case FirebaseAnalytics.Param.VALUE:
+                        bundle.putDouble(firebaseKey, jsonObject.getDouble(key));
+                        break;
+                    // Long
+                    case FirebaseAnalytics.Param.LEVEL:
+                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
+                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
+                    case FirebaseAnalytics.Param.QUANTITY:
+                    case FirebaseAnalytics.Param.SCORE:
+                    case FirebaseAnalytics.Param.SUCCESS:
+                        bundle.putLong(firebaseKey, jsonObject.getLong(key));
+                        break;
+                    case FirebaseAnalytics.Param.ITEMS:
+                        JSONArray items = jsonObject.getJSONArray(key);
+                        Parcelable[] itemList = new Parcelable[items.length()];
+                        for (int i = 0; i < items.length(); i++) {
+                            itemList[i] = jsonToBundle(items.getJSONObject(i));
+                        }
+                        bundle.putParcelableArray(firebaseKey, itemList);
+                        break;
+                    // All others are Strings.
+                    default:
+                        bundle.putString(firebaseKey, jsonObject.getString(key));
+                }
+            } catch (JSONException ex) {
+                Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as String.");
+                if (!bundle.containsKey(firebaseKey)) {
+                    bundle.putString(firebaseKey, jsonObject.getString(key));
+                }
+            }
+        }
+        return bundle;
+    }
+
+    static String mapEventNames(String eventName) {
+        if (eventName == null) return null;
+
+        return mapValue(eventsMap, FirebaseAnalytics.Event.class, "event_", eventName);
+    }
+
+    static String mapParams(String param) {
+        if (param == null) return null;
+
+        return mapValue(params, FirebaseAnalytics.Param.class, "param_", param);
+    }
+
+    private static String mapValue(Map<String, String> knownMappings, Class<?> clazz, String prefix, String value) {
+        String knownMapping = knownMappings.get(value);
+        if (knownMapping != null) return knownMapping;
+
+        if (value.startsWith(prefix)) {
+            String event = value.substring(prefix.length());
+
+            String firebaseValue = getClassProperty(clazz, event);
+            if (firebaseValue != null) {
+                // store for next time.
+                knownMappings.put(value, firebaseValue);
+
+                return firebaseValue;
+            }
+        }
+
+        return value;
+    }
+
+    private static String getClassProperty(Class<?> clazz, String propertyName) {
+        try {
+            Field field = clazz.getField(propertyName.toUpperCase(Locale.ROOT));
+            return (String) field.get(clazz);
+        } catch (IllegalAccessException | NoSuchFieldException | NullPointerException ignored) {
+        }
+
+        return null;
+    }
+
+    static final Map<String, String> eventsMap;
+    static final Map<String, String> params;
 
     static {
+        // Values taken from previous releases
         eventsMap = new HashMap<>();
         eventsMap.put("event_ad_impression", FirebaseAnalytics.Event.AD_IMPRESSION);
         eventsMap.put("event_add_payment_info", FirebaseAnalytics.Event.ADD_PAYMENT_INFO);
@@ -130,166 +325,6 @@ class FirebaseInstance implements FirebaseCommand {
         params.put("param_virtual_currency_name", FirebaseAnalytics.Param.VIRTUAL_CURRENCY_NAME);
     }
 
-    public FirebaseInstance(Context applicationContext) {
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
-    }
-
-    @Override
-    public void configure(Integer timeout, Integer minSeconds, Boolean analyticsEnabled) {
-        configure(timeout, analyticsEnabled);
-    }
-
-    @Override
-    public void configure(Integer timeout, Boolean analyticsEnabled) {
-        if (timeout > 0) {
-            mFirebaseAnalytics.setSessionTimeoutDuration(timeout);
-        }
-
-        if (analyticsEnabled != null) {
-            mFirebaseAnalytics.setAnalyticsCollectionEnabled(analyticsEnabled);
-        }
-    }
-
-    @Override
-    public void logEvent(String eventName, JSONObject eventParams) {
-        Bundle paramBundle;
-        try {
-            paramBundle = jsonToBundle(eventParams);
-        } catch (JSONException | NullPointerException e) {
-            paramBundle = null;
-        }
-        if (eventName != null) {
-            String ev = mapEventNames(eventName);
-            mFirebaseAnalytics.logEvent(ev, paramBundle);
-        }
-    }
-
-    @Override
-    public void setScreenName(Activity currentActivity, String screenName, String screenClass) {
-        if (screenName != null) {
-            mFirebaseAnalytics.setCurrentScreen(currentActivity, screenName, screenClass);
-        }
-    }
-
-    @Override
-    public void setUserId(String userId) {
-        if (userId != null) {
-            mFirebaseAnalytics.setUserId(userId);
-        }
-    }
-
-    @Override
-    public void setUserProperty(String propertyName, String propertyValue) {
-        if (propertyName != null && propertyValue != null) {
-            mFirebaseAnalytics.setUserProperty(propertyName, propertyValue);
-        }
-    }
-
-    @Override
-    public void setDefaultEventParameters(JSONObject eventParameters) {
-        Bundle bundle;
-        try {
-            bundle = jsonToBundle(eventParameters);
-        } catch (Exception ignored) {
-            bundle = null;
-        }
-        if (bundle != null) {
-            mFirebaseAnalytics.setDefaultEventParameters(bundle);
-        }
-    }
-
-    @Override
-    public void setConsent(JSONObject consentParameters) {
-        mFirebaseAnalytics.setConsent(jsonToConsentMap(consentParameters));
-    }
-
-    @Override
-    public void resetData() {
-        mFirebaseAnalytics.resetAnalyticsData();
-    }
-
-    static Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> jsonToConsentMap(JSONObject jsonObject) {
-        Map<FirebaseAnalytics.ConsentType, FirebaseAnalytics.ConsentStatus> consentSettings = new HashMap<>();
-        Iterator<String> keys = jsonObject.keys();
-        while (keys.hasNext()) {
-            try {
-                String key = keys.next();
-                FirebaseAnalytics.ConsentType consentType = mapConsentType(key);
-                FirebaseAnalytics.ConsentStatus consentStatus = mapConsentStatus(jsonObject.getString(key));
-                if (consentStatus != null && consentType != null) {
-                    consentSettings.put(consentType, consentStatus);
-                }
-            } catch (Exception ignored) {
-                // Value was not a string, malformed Consent Parameters. Ignore this parameter.
-            }
-        }
-        return consentSettings;
-    }
-
-    static Bundle jsonToBundle(JSONObject jsonObject) throws JSONException {
-        Bundle bundle = new Bundle();
-        Iterator<String> iter = jsonObject.keys();
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
-            String firebaseKey = mapParams(key);
-            try {
-                switch (firebaseKey) {
-                    // Double
-                    case FirebaseAnalytics.Param.DISCOUNT:
-                    case FirebaseAnalytics.Param.PRICE:
-                    case FirebaseAnalytics.Param.SHIPPING:
-                    case FirebaseAnalytics.Param.TAX:
-                    case FirebaseAnalytics.Param.VALUE:
-                        bundle.putDouble(firebaseKey, jsonObject.getDouble(key));
-                        break;
-                    // Long
-                    case FirebaseAnalytics.Param.LEVEL:
-                    case FirebaseAnalytics.Param.NUMBER_OF_NIGHTS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS:
-                    case FirebaseAnalytics.Param.NUMBER_OF_ROOMS:
-                    case FirebaseAnalytics.Param.QUANTITY:
-                    case FirebaseAnalytics.Param.SCORE:
-                    case FirebaseAnalytics.Param.SUCCESS:
-                        bundle.putLong(firebaseKey, jsonObject.getLong(key));
-                        break;
-                    case FirebaseAnalytics.Param.ITEMS:
-                        JSONArray items = jsonObject.getJSONArray(key);
-                        Parcelable[] itemList = new Parcelable[items.length()];
-                        for (int i = 0; i < items.length(); i++) {
-                            itemList[i] = jsonToBundle(items.getJSONObject(i));
-                        }
-                        bundle.putParcelableArray(firebaseKey, itemList);
-                        break;
-                    // All others are Strings.
-                    default:
-                        bundle.putString(firebaseKey, jsonObject.getString(key));
-                }
-            } catch (JSONException ex) {
-                Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as String.");
-                if (!bundle.containsKey(firebaseKey)) {
-                    bundle.putString(firebaseKey, jsonObject.getString(key));
-                }
-            }
-        }
-        return bundle;
-    }
-
-    private static String mapEventNames(String eventName) {
-        String name = eventsMap.get(eventName);
-        if (name == null) {
-            return eventName;
-        }
-        return name;
-    }
-
-    private static String mapParams(String param) {
-        String paramName = params.get(param);
-        if (paramName == null) {
-            return param;
-        }
-        return paramName;
-    }
-
     private static FirebaseAnalytics.ConsentStatus mapConsentStatus(String param) {
         try {
             return FirebaseAnalytics.ConsentStatus.valueOf(param.toUpperCase(Locale.ROOT));
@@ -304,5 +339,9 @@ class FirebaseInstance implements FirebaseCommand {
         } catch (IllegalArgumentException ignored) {
             return null;
         }
+    }
+
+    private static boolean isNullOrEmpty(JSONObject json) {
+        return json == null || json.length() <= 0;
     }
 }
