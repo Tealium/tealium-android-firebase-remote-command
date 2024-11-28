@@ -93,11 +93,6 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         }
                         mFirebaseCommand.logEvent(eventName, params);
                         break;
-                    case FirebaseConstants.Commands.SET_SCREEN_NAME:
-                        String screenName = payload.getString(FirebaseConstants.Keys.SCREEN_NAME);
-                        String screenClass = payload.optString(FirebaseConstants.Keys.SCREEN_CLASS, null);
-                        mFirebaseCommand.setScreenName(mCurrentActivity, screenName, screenClass);
-                        break;
                     case FirebaseConstants.Commands.SET_USER_PROPERTY:
                         JSONArray propertyNames;
                         JSONArray propertyValues;

@@ -41,8 +41,6 @@ interface FirebaseCommand {
      * @param screenName
      * @param screenClass
      */
-    @Deprecated
-    void setScreenName(Activity currentActivity, String screenName, String screenClass);
 
     /**
      * Sets the User Identifier for the given userId.
