@@ -22,19 +22,22 @@ android {
     buildFeatures {
         buildConfig true
     }
+    publishing {
+        singleVariant("release")
+    }
 }
 
 afterEvaluate {
 
-//    publishing {
-//        publications {
-//            mavenJava(MavenPublication) {
-//                from components.release
-//                groupId 'com.tealium.remotecommands'
-//                artifactId 'firebase'
-//                version tealium_firebase_version
-//            }
-//        }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.release
+                groupId 'com.tealium.remotecommands'
+                artifactId 'firebase'
+                version tealium_firebase_version
+            }
+        }
 //        repositories {
 //            maven {
 //                url "s3://maven.tealiumiq.com/android/releases/"
@@ -45,7 +48,7 @@ afterEvaluate {
 //                }
 //            }
 //        }
-//    }
+    }
 }
 
 dependencies {
