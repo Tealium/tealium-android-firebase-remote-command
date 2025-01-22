@@ -259,6 +259,35 @@ public class FirebaseRemoteCommandTests {
     }
 
     @Test
+    public void testScreenNameWithValidParams() {
+        RemoteCommand.Response response = ResponseBuilder.create()
+                .addCommand(Commands.SET_SCREEN_NAME)
+                .populatePayload((json) -> {
+                    json.put(Keys.SCREEN_NAME, "TestScreenName");
+                    json.put(Keys.SCREEN_CLASS, "TestScreenClass");
+                })
+                .build();
+
+        firebaseRemoteCommand.onInvoke(response);
+
+        verify(mockFirebaseInstance).setScreenName(activity, "TestScreenName", "TestScreenClass");
+    }
+
+    @Test
+    public void testScreenNameWithInvalidParams() {
+        RemoteCommand.Response response = ResponseBuilder.create()
+                .addCommand(Commands.SET_SCREEN_NAME)
+                .populatePayload((json) -> {
+                    json.put(Keys.SCREEN_CLASS, "TestScreenClass");
+                })
+                .build();
+
+        firebaseRemoteCommand.onInvoke(response);
+
+        verify(mockFirebaseInstance, never()).setScreenName(any(), any(), any());
+    }
+
+    @Test
     public void testUserPropertyWithValidStringParams() {
         RemoteCommand.Response response = ResponseBuilder.create()
                 .addCommand(Commands.SET_USER_PROPERTY)

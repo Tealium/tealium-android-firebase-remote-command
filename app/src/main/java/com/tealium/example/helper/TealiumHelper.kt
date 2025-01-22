@@ -29,7 +29,7 @@ object TealiumHelper {
             modules.add(Modules.Lifecycle)
 
             // TagManagement controlled RemoteCommand
-            dispatchers.add(Dispatchers.TagManagement)
+//             dispatchers.add(Dispatchers.TagManagement)
 
             // JSON controlled RemoteCommand
             dispatchers.add(Dispatchers.RemoteCommands)
@@ -39,7 +39,7 @@ object TealiumHelper {
 
         Tealium.create(TEALIUM_MAIN, config) {
             // Remote Command Tag - requires TiQ
-            remoteCommands?.add(firebaseRemoteCommand)
+//             remoteCommands?.add(firebaseRemoteCommand)
 
             // JSON Remote Command - requires filename
             remoteCommands?.add(firebaseRemoteCommand, "firebase.json")

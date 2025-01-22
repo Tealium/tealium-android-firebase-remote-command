@@ -14,6 +14,7 @@ public final class FirebaseConstants {
 
         public static final String CONFIGURE = "config";
         public static final String LOG_EVENT = "logevent";
+        public static final String SET_SCREEN_NAME = "setscreenname";
         public static final String SET_USER_ID = "setuserid";
         public static final String SET_USER_PROPERTY = "setuserproperty";
         public static final String RESET_DATA = "resetdata";

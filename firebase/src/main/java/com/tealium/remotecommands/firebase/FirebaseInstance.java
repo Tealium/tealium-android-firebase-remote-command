@@ -58,6 +58,13 @@ class FirebaseInstance implements FirebaseCommand {
     }
 
     @Override
+    public void setScreenName(Activity currentActivity, String screenName, String screenClass) {
+        if (screenName != null) {
+            mFirebaseAnalytics.setCurrentScreen(currentActivity, screenName, screenClass);
+        }
+    }
+
+    @Override
     public void setUserId(String userId) {
         if (userId != null) {
             mFirebaseAnalytics.setUserId(userId);

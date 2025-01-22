@@ -115,6 +115,20 @@ public class FirebaseInstanceTests {
     }
 
     @Test
+    public void setCurrentScreen_DoesNothing_When_ScreenName_IsNull() {
+        firebaseInstance.setScreenName(activity, null, "ScreenClass");
+
+        verify(mockFirebaseAnalytics, never()).setCurrentScreen(any(), any(), any());
+    }
+
+    @Test
+    public void setCurrentScreen_SetsCurrentScreen_When_ScreenName_IsSet() {
+        firebaseInstance.setScreenName(activity, "TestScreen", "ScreenClass");
+
+        verify(mockFirebaseAnalytics).setCurrentScreen(activity, "TestScreen", "ScreenClass");
+    }
+
+    @Test
     public void setUserId_DoesNot_SetUserId_When_UserId_IsNull() {
         firebaseInstance.setUserId(null);
 
