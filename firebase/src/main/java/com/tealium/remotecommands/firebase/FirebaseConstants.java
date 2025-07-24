@@ -32,6 +32,8 @@ public final class FirebaseConstants {
         public static final String MIN_SECONDS = "firebase_session_minimum_seconds";
         public static final String ANALYTICS_ENABLED = "firebase_analytics_enabled";
         public static final String LOG_LEVEL = "firebase_log_level";
+        public static final String INVALID_CHAR_STRATEGY = "firebase_invalid_char_strategy";
+        public static final String GA360_MODE = "firebase_ga360_mode";
         public static final String EVENT_NAME = "firebase_event_name";
         public static final String EVENT_PARAMS = "event";
         public static final String DEFAULT_PARAMS = "default";

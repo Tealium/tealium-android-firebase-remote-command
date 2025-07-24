@@ -81,8 +81,15 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                 switch (command) {
                     case FirebaseConstants.Commands.CONFIGURE:
                         mFirebaseCommand.configure(
-                                payload.optInt(FirebaseConstants.Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
-                                payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled));
+                            payload.optInt(FirebaseConstants.Keys.SESSION_TIMEOUT, sErrorTime) * 1000,
+                            payload.optBoolean(FirebaseConstants.Keys.ANALYTICS_ENABLED, sDefaultAnalyticsEnabled)
+                        );
+                        
+                        String invalidCharStrategy = payload.optString(FirebaseConstants.Keys.INVALID_CHAR_STRATEGY, FirebaseValidator.STRATEGY_REPLACE);
+                        FirebaseValidator.setInvalidCharStrategy(invalidCharStrategy);
+                        
+                        boolean ga360Mode = payload.optBoolean(FirebaseConstants.Keys.GA360_MODE, false);
+                        FirebaseValidator.setGA360Mode(ga360Mode);
                         break;
                     case FirebaseConstants.Commands.LOG_EVENT:
                         String eventName = payload.getString(FirebaseConstants.Keys.EVENT_NAME);
@@ -91,7 +98,22 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         if (items != null) {
                             params.put("param_items", itemsParamsToJsonArray(items));
                         }
-                        mFirebaseCommand.logEvent(eventName, params);
+                        
+                        // Validate and sanitize event name
+                        FirebaseValidator.ValidationResult eventResult = FirebaseValidator.validateEventName(eventName);
+                        if (!eventResult.isValid) {
+                            Log.e(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.ERROR_PREFIX + eventResult.errorMessage);
+                            return; // Don't send invalid events that can't be sanitized
+                        }
+                        if (eventResult.isSanitized()) {
+                            Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + eventResult.errorMessage + 
+                                  " ('" + eventResult.originalValue + "' → '" + eventResult.sanitizedValue + "')");
+                        }
+                        
+                        // Validate and sanitize parameter names
+                        JSONObject sanitizedParams = validateAndSanitizeParameters(params);
+                        
+                        mFirebaseCommand.logEvent(eventResult.sanitizedValue, sanitizedParams);
                         break;
                     case FirebaseConstants.Commands.SET_SCREEN_NAME:
                         String screenName = payload.getString(FirebaseConstants.Keys.SCREEN_NAME);
@@ -110,7 +132,25 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                                     String name = propertyNames.getString(i);
                                     String value = propertyValues.optString(i, "");
 
-                                    mFirebaseCommand.setUserProperty(name, value);
+                                    // Validate and sanitize user property name
+                                    FirebaseValidator.ValidationResult propertyResult = FirebaseValidator.validateUserPropertyName(name);
+                                    if (!propertyResult.isValid) {
+                                        Log.e(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.ERROR_PREFIX + propertyResult.errorMessage);
+                                        continue; // Skip invalid property names that can't be sanitized
+                                    }
+                                    if (propertyResult.isSanitized()) {
+                                        Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + propertyResult.errorMessage + 
+                                              " ('" + propertyResult.originalValue + "' → '" + propertyResult.sanitizedValue + "')");
+                                    }
+
+                                    // Validate and truncate user property value
+                                    FirebaseValidator.ValidationResult valueResult = FirebaseValidator.validateUserPropertyValue(value);
+                                    if (valueResult.isSanitized()) {
+                                        Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + valueResult.errorMessage + 
+                                              " ('" + valueResult.originalValue + "' → '" + valueResult.sanitizedValue + "')");
+                                    }
+
+                                    mFirebaseCommand.setUserProperty(propertyResult.sanitizedValue, valueResult.sanitizedValue);
                                 } catch (IndexOutOfBoundsException | JSONException ignore) {
                                 }
                             }
@@ -118,7 +158,26 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                         } else {
                             String propertyName = payload.getString(FirebaseConstants.Keys.USER_PROPERTY_NAME);
                             String propertyValue = payload.optString(FirebaseConstants.Keys.USER_PROPERTY_VALUE, null);
-                            mFirebaseCommand.setUserProperty(propertyName, propertyValue);
+                            
+                            // Validate and sanitize user property name
+                            FirebaseValidator.ValidationResult propertyResult = FirebaseValidator.validateUserPropertyName(propertyName);
+                            if (!propertyResult.isValid) {
+                                Log.e(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.ERROR_PREFIX + propertyResult.errorMessage);
+                                break; // Skip invalid property names that can't be sanitized
+                            }
+                            if (propertyResult.isSanitized()) {
+                                Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + propertyResult.errorMessage + 
+                                      " ('" + propertyResult.originalValue + "' → '" + propertyResult.sanitizedValue + "')");
+                            }
+                            
+                            // Validate and truncate user property value
+                            FirebaseValidator.ValidationResult valueResult = FirebaseValidator.validateUserPropertyValue(propertyValue);
+                            if (valueResult.isSanitized()) {
+                                Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + valueResult.errorMessage + 
+                                      " ('" + valueResult.originalValue + "' → '" + valueResult.sanitizedValue + "')");
+                            }
+                            
+                            mFirebaseCommand.setUserProperty(propertyResult.sanitizedValue, valueResult.sanitizedValue);
                         }
                         break;
                     case FirebaseConstants.Commands.SET_USER_ID:
@@ -131,7 +190,9 @@ public class FirebaseRemoteCommand extends RemoteCommand {
                     case FirebaseConstants.Commands.SET_DEFAULT_PARAMETERS:
                         JSONObject defaultParams = getParams(payload, FirebaseConstants.Keys.DEFAULT_PARAMS, FirebaseConstants.Keys.TAG_DEFAULT_PARAMS);
                         if (defaultParams.length() > 0) {
-                            mFirebaseCommand.setDefaultEventParameters(defaultParams);
+                            // Validate and sanitize default parameter names
+                            JSONObject sanitizedDefaultParams = validateAndSanitizeParameters(defaultParams);
+                            mFirebaseCommand.setDefaultEventParameters(sanitizedDefaultParams);
                         }
                         break;
                     case FirebaseConstants.Commands.SET_CONSENT:
@@ -297,4 +358,55 @@ public class FirebaseRemoteCommand extends RemoteCommand {
         return (json != null && json.has(key) && !json.isNull(key));
     }
 
+        /**
+     * Validates and sanitizes parameter names in a JSONObject
+     * 
+     * @param params The JSONObject containing parameters to validate
+     * @return JSONObject with sanitized parameter names (original object if no changes needed)
+     */
+    private JSONObject validateAndSanitizeParameters(JSONObject params) {
+        if (params == null) {
+            return null;
+        }
+
+        JSONObject sanitizedParams = new JSONObject(); 
+        Iterator<String> keys = params.keys();
+        
+        while (keys.hasNext()) {
+            String originalKey = keys.next();
+            
+            // Validate and sanitize parameter name
+            FirebaseValidator.ValidationResult paramResult = FirebaseValidator.validateParameterName(originalKey);
+            if (!paramResult.isValid) {
+                Log.e(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.ERROR_PREFIX + paramResult.errorMessage); 
+                continue; // Skip invalid parameter names
+            }
+            
+            if (paramResult.isSanitized()) {
+                Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + paramResult.errorMessage + 
+                      " ('" + paramResult.originalValue + "' → '" + paramResult.sanitizedValue + "')");
+            }
+            
+            try {
+                Object paramValue = params.get(originalKey);
+                
+                // Validate parameter value if it's a string
+                if (paramValue instanceof String) {
+                    FirebaseValidator.ValidationResult valueResult = FirebaseValidator.validateParameterValue((String) paramValue);
+                    if (valueResult.isSanitized()) {
+                        Log.w(FirebaseValidator.VALIDATION_TAG, FirebaseValidator.WARNING_PREFIX + valueResult.errorMessage + 
+                              " ('" + valueResult.originalValue + "' → '" + valueResult.sanitizedValue + "')");
+                    }
+                    sanitizedParams.put(paramResult.sanitizedValue, valueResult.sanitizedValue);
+                } else {
+                    // Non-string values (numbers, etc.) - use as-is
+                    sanitizedParams.put(paramResult.sanitizedValue, paramValue);
+                }
+            } catch (JSONException e) {
+                Log.w(FirebaseConstants.TAG, "Error copying parameter: " + originalKey, e);
+            }
+        }
+        
+        return sanitizedParams;
+    }
 }
