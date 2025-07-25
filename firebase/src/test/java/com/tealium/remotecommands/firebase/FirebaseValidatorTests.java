@@ -713,4 +713,74 @@ public class FirebaseValidatorTests {
         assertEquals("Original value should be preserved", exactly24Chars, result.originalValue);
         assertEquals("Sanitized value should be same as original", exactly24Chars, result.sanitizedValue);
     }
+
+    // User Property Value Validation Tests
+
+    @Test
+    public void validateUserPropertyValue_ValueWithin36Chars_ReturnsValid() {
+        // User property value with exactly 36 characters (limit)
+        String exactly36Chars = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // 36 'a's
+        assertEquals("Test string should be exactly 36 chars", 36, exactly36Chars.length());
+
+        FirebaseValidator.ValidationResult result = FirebaseValidator.validateUserPropertyValue(exactly36Chars);
+
+        assertTrue("User property value within 36 chars should be valid", result.isValid);
+        assertFalse("User property value should not be sanitized", result.isSanitized());
+        assertEquals("Original value should be preserved", exactly36Chars, result.originalValue);
+        assertEquals("Sanitized value should be same as original", exactly36Chars, result.sanitizedValue);
+        assertEquals("Error message should indicate valid", "Valid", result.errorMessage);
+    }
+
+    @Test
+    public void validateUserPropertyValue_ValueOver36Chars_TruncatesCorrectly() {
+        // User property value with 37 characters (should be truncated to 36)
+        String thirty7Chars = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // 37 'a's
+        assertEquals("Test string should be exactly 37 chars", 37, thirty7Chars.length());
+
+        FirebaseValidator.ValidationResult result = FirebaseValidator.validateUserPropertyValue(thirty7Chars);
+
+        assertTrue("User property value should be sanitized", result.isValid);
+        assertTrue("User property value should be marked as sanitized", result.isSanitized());
+        assertEquals("Original value should be preserved", thirty7Chars, result.originalValue);
+        assertEquals("Value should be truncated to 36 chars", 36, result.sanitizedValue.length());
+        assertEquals("Truncated value should match expected", thirty7Chars.substring(0, 36), result.sanitizedValue);
+        assertEquals("Error message should indicate truncation", "User property value truncated to 36 characters", result.errorMessage);
+    }
+
+    @Test
+    public void validateUserPropertyValue_NullValue_ReturnsValid() {
+        // Null user property value should be handled gracefully
+        FirebaseValidator.ValidationResult result = FirebaseValidator.validateUserPropertyValue(null);
+
+        assertTrue("Null user property value should be valid", result.isValid);
+        assertFalse("Null value should not be marked as sanitized", result.isSanitized());
+        assertEquals("Original value should be null", null, result.originalValue);
+        assertEquals("Sanitized value should be null", null, result.sanitizedValue);
+        assertEquals("Error message should indicate valid", "Valid", result.errorMessage);
+    }
+
+    @Test
+    public void validateUserPropertyValue_EmptyString_ReturnsValid() {
+        // Empty user property value should be valid
+        FirebaseValidator.ValidationResult result = FirebaseValidator.validateUserPropertyValue("");
+
+        assertTrue("Empty user property value should be valid", result.isValid);
+        assertFalse("Empty value should not be marked as sanitized", result.isSanitized());
+        assertEquals("Original value should be empty", "", result.originalValue);
+        assertEquals("Sanitized value should be empty", "", result.sanitizedValue);
+        assertEquals("Error message should indicate valid", "Valid", result.errorMessage);
+    }
+
+    @Test
+    public void validateUserPropertyValue_ShortValue_ReturnsValid() {
+        // Short user property value should be valid
+        String shortValue = "short";
+        FirebaseValidator.ValidationResult result = FirebaseValidator.validateUserPropertyValue(shortValue);
+
+        assertTrue("Short user property value should be valid", result.isValid);
+        assertFalse("Short value should not be marked as sanitized", result.isSanitized());
+        assertEquals("Original value should be preserved", shortValue, result.originalValue);
+        assertEquals("Sanitized value should be same as original", shortValue, result.sanitizedValue);
+        assertEquals("Error message should indicate valid", "Valid", result.errorMessage);
+    }
 } 
