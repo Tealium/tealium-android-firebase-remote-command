@@ -111,7 +111,9 @@ public class FirebaseValidator {
          * @return true if the original value is not equal to the sanitized value, false otherwise
          */
         public boolean isSanitized() {
-            return this.isValid && !this.originalValue.equals(this.sanitizedValue);
+            if (!this.isValid) return false;
+            else if (this.originalValue == null) return false;
+            else return !this.originalValue.equals(this.sanitizedValue);
         }
     }
 
@@ -282,7 +284,7 @@ public class FirebaseValidator {
         // Step 2: Handle invalid characters based on strategy
         if (STRATEGY_REPLACE.equals(invalidCharStrategy)) {
             // Replace invalid characters with underscore
-            result = result.replaceAll("[^a-zA-Z0-9_]", "_");
+        result = result.replaceAll("[^a-zA-Z0-9_]", "_");
         } else {
             // Remove invalid characters completely
             result = result.replaceAll("[^a-zA-Z0-9_]", "");
@@ -329,7 +331,7 @@ public class FirebaseValidator {
         // Step 2: Handle invalid characters based on strategy
         if (STRATEGY_REPLACE.equals(invalidCharStrategy)) {
             // Replace invalid characters with underscore
-            result = result.replaceAll("[^a-zA-Z0-9_]", "_");
+        result = result.replaceAll("[^a-zA-Z0-9_]", "_");
         } else {
             // Remove invalid characters completely
             result = result.replaceAll("[^a-zA-Z0-9_]", "");

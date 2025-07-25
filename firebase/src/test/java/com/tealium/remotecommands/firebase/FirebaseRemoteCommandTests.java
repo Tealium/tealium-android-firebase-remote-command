@@ -101,7 +101,10 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        verify(mockFirebaseInstance).logEvent(eq("TestEvent"), eq(eventParams));
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
+        verify(mockFirebaseInstance).logEvent(eq("TestEvent"), paramCaptor.capture());
+        JSONObject capturedParams = paramCaptor.getValue();
+        assertEquals(eventParams.toString(), capturedParams.toString());
     }
 
     @Test
@@ -118,7 +121,10 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        verify(mockFirebaseInstance).logEvent(eq("TestEvent"), eq(eventParams));
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
+        verify(mockFirebaseInstance).logEvent(eq("TestEvent"), paramCaptor.capture());
+        JSONObject capturedParams = paramCaptor.getValue();
+        assertEquals(eventParams.toString(), capturedParams.toString());
     }
 
     @Test
@@ -170,11 +176,11 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        ArgumentCaptor<JSONObject> paramCaptor = ArgumentCaptor.forClass(JSONObject.class);
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
         verify(mockFirebaseInstance).logEvent(eq("TestEvent"), paramCaptor.capture());
 
         JSONObject capturedParams = paramCaptor.getValue();
-        assertEquals(eventParams, capturedParams);
+        assertEquals(eventParams.toString(), capturedParams.toString());
 
         JSONArray items = capturedParams.optJSONArray("param_items");
         assertNotNull(items);
@@ -204,11 +210,11 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        ArgumentCaptor<JSONObject> paramCaptor = ArgumentCaptor.forClass(JSONObject.class);
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
         verify(mockFirebaseInstance).logEvent(eq("TestEvent"), paramCaptor.capture());
 
         JSONObject capturedParams = paramCaptor.getValue();
-        assertEquals(eventParams, capturedParams);
+        assertEquals(eventParams.toString(), capturedParams.toString());
 
         JSONArray items = capturedParams.optJSONArray("param_items");
         assertNotNull(items);
@@ -241,11 +247,10 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        ArgumentCaptor<JSONObject> paramCaptor = ArgumentCaptor.forClass(JSONObject.class);
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
         verify(mockFirebaseInstance).logEvent(eq("TestEvent"), paramCaptor.capture());
-
         JSONObject capturedParams = paramCaptor.getValue();
-        assertEquals(eventParams, capturedParams);
+        assertEquals(eventParams.toString(), capturedParams.toString());
 
         JSONArray items = capturedParams.optJSONArray("param_items");
         assertNotNull(items);
@@ -445,7 +450,10 @@ public class FirebaseRemoteCommandTests {
 
         firebaseRemoteCommand.onInvoke(response);
 
-        verify(mockFirebaseInstance).setDefaultEventParameters(defaultParams);
+        org.mockito.ArgumentCaptor<JSONObject> paramCaptor = org.mockito.ArgumentCaptor.forClass(JSONObject.class);
+        verify(mockFirebaseInstance).setDefaultEventParameters(paramCaptor.capture());
+        JSONObject capturedParams = paramCaptor.getValue();
+        assertEquals(defaultParams.toString(), capturedParams.toString());
     }
 
     @Test
