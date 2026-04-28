@@ -160,18 +160,29 @@ class FirebaseInstance implements FirebaseCommand {
                         }
                         bundle.putParcelableArray(firebaseKey, itemList);
                         break;
-                    // All others are Strings.
+                    // Unknown keys: preserve the parsed primitive type so that
+                    // large longs are not stringified to scientific notation.
                     default:
-                        bundle.putString(firebaseKey, jsonObject.getString(key));
+                        putPrimitive(bundle, firebaseKey, jsonObject.get(key));
                 }
             } catch (JSONException ex) {
                 Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as String.");
                 if (!bundle.containsKey(firebaseKey)) {
-                    bundle.putString(firebaseKey, jsonObject.getString(key));
+                    putPrimitive(bundle, firebaseKey, jsonObject.get(key));
                 }
             }
         }
         return bundle;
+    }
+
+    static void putPrimitive(Bundle bundle, String key, Object value) {
+        if (value instanceof Long || value instanceof Integer) {
+            bundle.putLong(key, ((Number) value).longValue());
+        } else if (value instanceof Double || value instanceof Float) {
+            bundle.putDouble(key, ((Number) value).doubleValue());
+        } else {
+            bundle.putString(key, value.toString());
+        }
     }
 
     static String mapEventNames(String eventName) {
