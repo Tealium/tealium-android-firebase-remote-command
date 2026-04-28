@@ -166,7 +166,7 @@ class FirebaseInstance implements FirebaseCommand {
                         putPrimitive(bundle, firebaseKey, jsonObject.get(key));
                 }
             } catch (JSONException ex) {
-                Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding as using primitive fallback.");
+                Log.d(FirebaseConstants.TAG, "jsonToBundle: Error converting value for key: " + firebaseKey + ". Adding using primitive fallback.");
                 if (!bundle.containsKey(firebaseKey)) {
                     putPrimitive(bundle, firebaseKey, jsonObject.get(key));
                 }
