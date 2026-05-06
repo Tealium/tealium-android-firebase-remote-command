@@ -176,10 +176,15 @@ class FirebaseInstance implements FirebaseCommand {
     }
 
     static void putPrimitive(Bundle bundle, String key, Object value) {
-        if (value instanceof Long || value instanceof Integer) {
-            bundle.putLong(key, ((Number) value).longValue());
-        } else if (value instanceof Double || value instanceof Float) {
-            bundle.putDouble(key, ((Number) value).doubleValue());
+        if (value == null || value == JSONObject.NULL) return;
+        if (value instanceof Long) {
+            bundle.putLong(key, (Long) value);
+        } else if (value instanceof Integer) {
+            bundle.putLong(key, (Integer) value);
+        } else if (value instanceof Double) {
+            bundle.putDouble(key, (Double) value);
+        } else if (value instanceof Boolean) {
+            bundle.putBoolean(key, (Boolean) value);
         } else {
             bundle.putString(key, value.toString());
         }

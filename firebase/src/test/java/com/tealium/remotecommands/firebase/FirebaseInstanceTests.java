@@ -315,7 +315,7 @@ public class FirebaseInstanceTests {
     }
 
     @Test
-    public void logEvent_Stringifies_Boolean_On_UnknownKey() throws JSONException {
+    public void logEvent_Preserves_Boolean_On_UnknownKey() throws JSONException {
         JSONObject params = new JSONObject();
         params.put("my_custom_bool", true);
 
@@ -325,6 +325,6 @@ public class FirebaseInstanceTests {
         verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
 
         Bundle bundle = bundleCaptor.getValue();
-        assertEquals("true", bundle.getString("my_custom_bool"));
+        assertEquals(true, bundle.getBoolean("my_custom_bool"));
     }
 }
