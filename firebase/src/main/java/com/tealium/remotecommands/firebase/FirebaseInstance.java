@@ -180,7 +180,7 @@ class FirebaseInstance implements FirebaseCommand {
         if (value instanceof Long) {
             bundle.putLong(key, (Long) value);
         } else if (value instanceof Integer) {
-            bundle.putLong(key, (Integer) value);
+            bundle.putInt(key, (Integer) value);
         } else if (value instanceof Double) {
             bundle.putDouble(key, (Double) value);
         } else if (value instanceof Boolean) {
