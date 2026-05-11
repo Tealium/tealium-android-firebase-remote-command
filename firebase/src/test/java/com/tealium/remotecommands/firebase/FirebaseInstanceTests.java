@@ -256,4 +256,75 @@ public class FirebaseInstanceTests {
     public void mapParams_ReturnsValue_When_NotMatched() {
         assertEquals("my_custom_param", FirebaseInstance.mapParams("my_custom_param"));
     }
+
+    @Test
+    public void logEvent_Preserves_LargeLong_On_UnknownKey() throws JSONException {
+        long largeValue = 10_000_000_000L;
+        JSONObject params = new JSONObject();
+        params.put("my_custom_long", largeValue);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(largeValue, bundle.getLong("my_custom_long"));
+    }
+
+    @Test
+    public void logEvent_Preserves_Int_As_Long_On_UnknownKey() throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put("my_custom_int", 42);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(42L, bundle.getLong("my_custom_int"));
+    }
+
+    @Test
+    public void logEvent_Preserves_Double_On_UnknownKey() throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put("my_custom_double", 9.99);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(9.99, bundle.getDouble("my_custom_double"), 0.0001);
+    }
+
+    @Test
+    public void logEvent_Preserves_String_On_UnknownKey() throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put("my_custom_string", "hello");
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals("hello", bundle.getString("my_custom_string"));
+    }
+
+    @Test
+    public void logEvent_Preserves_Boolean_On_UnknownKey() throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put("my_custom_bool", true);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(true, bundle.getBoolean("my_custom_bool"));
+    }
 }
