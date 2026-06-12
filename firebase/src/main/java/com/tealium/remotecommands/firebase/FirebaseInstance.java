@@ -183,6 +183,14 @@ class FirebaseInstance implements FirebaseCommand {
             bundle.putInt(key, (Integer) value);
         } else if (value instanceof Double) {
             bundle.putDouble(key, (Double) value);
+        } else if (value instanceof Float) {
+            bundle.putFloat(key, (Float) value);
+        } else if (value instanceof Short) {
+            bundle.putShort(key, (Short) value);
+        } else if (value instanceof Byte) {
+            bundle.putByte(key, (Byte) value);
+        } else if (value instanceof Character) {
+            bundle.putChar(key, (Character) value);
         } else if (value instanceof Boolean) {
             bundle.putBoolean(key, (Boolean) value);
         } else {

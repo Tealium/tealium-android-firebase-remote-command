@@ -283,7 +283,7 @@ public class FirebaseInstanceTests {
         verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
 
         Bundle bundle = bundleCaptor.getValue();
-        assertEquals(42L, bundle.getLong("my_custom_int"));
+        assertEquals(42, bundle.getInt("my_custom_int"));
     }
 
     @Test
@@ -298,6 +298,70 @@ public class FirebaseInstanceTests {
 
         Bundle bundle = bundleCaptor.getValue();
         assertEquals(9.99, bundle.getDouble("my_custom_double"), 0.0001);
+    }
+
+    @Test
+    public void logEvent_Preserves_Float_On_UnknownKey() throws JSONException {
+        // JSONObject converts Float to Double when putting or parsing from string.
+        // But will accept it when constructed from a map.
+        Map<String, Float> map = Map.of("my_custom_float", 9.99f);
+        JSONObject params = new JSONObject(map);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(9.99f, bundle.getFloat("my_custom_float"), 0.0001);
+    }
+
+    @Test
+    public void logEvent_Preserves_Short_On_UnknownKey() throws JSONException {
+        // JSONObject converts Short to Int when putting or parsing from string.
+        // But will accept it when constructed from a map.
+        Map<String, Short> map = Map.of("my_custom_short", (short) 9);
+        JSONObject params = new JSONObject(map);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals((short) 9, bundle.getShort("my_custom_short"));
+    }
+
+    @Test
+    public void logEvent_Preserves_Byte_On_UnknownKey() throws JSONException {
+        // JSONObject converts Byte to Int when putting or parsing from string.
+        // But will accept it when constructed from a map.
+        Map<String, Byte> map = Map.of("my_custom_byte", (byte) 2);
+        JSONObject params = new JSONObject(map);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals(2, bundle.getByte("my_custom_byte"));
+    }
+
+    @Test
+    public void logEvent_Preserves_Character_On_UnknownKey() throws JSONException {
+        // JSONObject converts Character to String when putting or parsing from string.
+        // But will accept it when constructed from a map.
+        Map<String, Character> map = Map.of("my_custom_char", 'a');
+        JSONObject params = new JSONObject(map);
+
+        firebaseInstance.logEvent("TestEvent", params);
+
+        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
+
+        Bundle bundle = bundleCaptor.getValue();
+        assertEquals('a', bundle.getChar("my_custom_char"));
     }
 
     @Test
