@@ -313,7 +313,7 @@ public class FirebaseInstanceTests {
         verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
 
         Bundle bundle = bundleCaptor.getValue();
-        assertEquals(9.99f, bundle.getFloat("my_custom_float"), 0.0001);
+        assertEquals(9.99f, bundle.getFloat("my_custom_float"), 0.0001f);
     }
 
     @Test
@@ -345,7 +345,7 @@ public class FirebaseInstanceTests {
         verify(mockFirebaseAnalytics).logEvent(eq("TestEvent"), bundleCaptor.capture());
 
         Bundle bundle = bundleCaptor.getValue();
-        assertEquals(2, bundle.getByte("my_custom_byte"));
+        assertEquals((byte) 2, bundle.getByte("my_custom_byte"));
     }
 
     @Test
