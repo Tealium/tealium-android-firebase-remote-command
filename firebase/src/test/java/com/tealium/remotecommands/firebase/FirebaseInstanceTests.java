@@ -273,7 +273,7 @@ public class FirebaseInstanceTests {
     }
 
     @Test
-    public void logEvent_Preserves_Int_As_Long_On_UnknownKey() throws JSONException {
+    public void logEvent_Preserves_Int_On_UnknownKey() throws JSONException {
         JSONObject params = new JSONObject();
         params.put("my_custom_int", 42);
 
